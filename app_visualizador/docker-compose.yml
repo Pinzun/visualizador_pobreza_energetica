@@ -34,17 +34,16 @@ services:
 
   frontend:
     build:
-      context: ./frontend/app
-      dockerfile: ../Dockerfile.dev # o Dockerfile.dev si está dentro de app
+      context: ./app_visualizador/frontend/app
+      dockerfile: ../Dockerfile.dev
     volumes:
-      - ./frontend/app:/app
-      - node_modules:/app/node_modules
-
+      - './app_visualizador/frontend/app:/app'
+      - 'node_modules:/app/node_modules'
     environment:
       - NODE_ENV=development
     ports:
-      - "5173:5173"
-    command: npm run dev
+      - '5173:5173'
+    command: 'npm run dev -- --host'
     restart: unless-stopped
 
 volumes:

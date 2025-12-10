@@ -1,0 +1,17 @@
+{
+    "4101":{"CUT_REG":   "04", "CUT_COM":  "4101",  "NOMBRE":  "La Serena"},
+    "4102":{"CUT_REG":   "04", "CUT_COM":  "4102",  "NOMBRE":  "Coquimbo"},
+    "4103":{"CUT_REG":   "04", "CUT_COM":  "4103",  "NOMBRE":  "Andacollo"},
+    "4104":{"CUT_REG":   "04", "CUT_COM":  "4104",  "NOMBRE":  "La Higuera"},
+    "4105":{"CUT_REG":   "04", "CUT_COM":  "4105",  "NOMBRE":  "Paiguano"},
+    "4106":{"CUT_REG":   "04", "CUT_COM":  "4106",  "NOMBRE":  "Vicuña"},
+    "4201":{"CUT_REG":   "04", "CUT_COM":  "4201",  "NOMBRE":  "Illapel"},
+    "4202":{"CUT_REG":   "04", "CUT_COM":  "4202",  "NOMBRE":  "Canela"},
+    "4203":{"CUT_REG":   "04", "CUT_COM":  "4203",  "NOMBRE":  "Los Vilos"},
+    "4204":{"CUT_REG":   "04", "CUT_COM":  "4204",  "NOMBRE":  "Salamanca"},
+    "4301":{"CUT_REG":   "04", "CUT_COM":  "4301",  "NOMBRE":  "Ovalle"},
+    "4302":{"CUT_REG":   "04", "CUT_COM":  "4302",  "NOMBRE":  "Combarbalá"},
+    "4303":{"CUT_REG":   "04", "CUT_COM":  "4303",  "NOMBRE":  "Monte Patria"},
+    "4304":{"CUT_REG":   "04", "CUT_COM":  "4304",  "NOMBRE":  "Punitaqui"},
+    "4305":{"CUT_REG":   "04", "CUT_COM":  "4305",  "NOMBRE":  "Río Hurtado"}
+}

@@ -1,0 +1,9 @@
+{
+    "1101":{"CUT_REG":   "01", "CUT_COM":  "1101",  "NOMBRE":  "Iquique"},
+    "1107":{"CUT_REG":   "01", "CUT_COM":  "1107",  "NOMBRE":  "Alto Hospicio"},
+    "1401":{"CUT_REG":   "01", "CUT_COM":  "1401",  "NOMBRE":  "Pozo Almonte"},
+    "1402":{"CUT_REG":   "01", "CUT_COM":  "1402",  "NOMBRE":  "Camiña"},
+    "1403":{"CUT_REG":   "01", "CUT_COM":  "1403",  "NOMBRE":  "Colchane"},
+    "1404":{"CUT_REG":   "01", "CUT_COM":  "1404",  "NOMBRE":  "Huara"},
+    "1405":{"CUT_REG":   "01", "CUT_COM":  "1405",  "NOMBRE":  "Pica"}
+}

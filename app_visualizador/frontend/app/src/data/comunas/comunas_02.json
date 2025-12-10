@@ -1,0 +1,11 @@
+{
+    "2101": {"CUT_REG":   "02", "CUT_COM":  "2101",  "NOMBRE":  "Antofagasta"},
+    "2102":{"CUT_REG":   "02", "CUT_COM":  "2102",  "NOMBRE":  "Mejillones"},
+    "2103":{"CUT_REG":   "02", "CUT_COM":  "2103",  "NOMBRE":  "Sierra Gorda"},
+    "2104":{"CUT_REG":   "02", "CUT_COM":  "2104",  "NOMBRE":  "Taltal"},
+    "2201":{"CUT_REG":   "02", "CUT_COM":  "2201",  "NOMBRE":  "Calama"},
+    "2202":{"CUT_REG":   "02", "CUT_COM":  "2202",  "NOMBRE":  "Ollagüe"},
+    "2203":{"CUT_REG":   "02", "CUT_COM":  "2203",  "NOMBRE":  "San Pedro de Atacama"},
+    "2301":{"CUT_REG":   "02", "CUT_COM":  "2301",  "NOMBRE":  "Tocopilla"},
+    "2302":{"CUT_REG":   "02", "CUT_COM":  "2302",  "NOMBRE":  "María Elena"}
+}

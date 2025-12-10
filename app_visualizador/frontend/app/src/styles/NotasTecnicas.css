@@ -1,0 +1,144 @@
+/* src/styles/NotasTecnicas.css */
+
+.notas-tecnicas {
+  --nt-bg: #fff;
+  --nt-fg: #222;
+  --nt-muted: #666;
+  --nt-border: #e5e7eb;
+  --nt-accent: #0a66c2;
+  --nt-callout-bg: #f5f9ff;
+
+  background: var(--nt-bg);
+  color: var(--nt-fg);
+  border: 1px solid var(--nt-border);
+  border-radius: 12px;
+  padding: 20px;
+  margin: 0 auto;
+  max-width: 1200px;
+
+  /* si el contenedor padre fija altura (home-layout), esto permite scroll interno */
+  height: 100%;
+  overflow: auto;
+}
+
+.nt-header {
+  margin-bottom: 12px;
+}
+.notas-tecnicas h1 {
+  font-size: clamp(1.3rem, 2.2vw, 1.9rem);
+  margin: 0 0 4px;
+}
+.notas-tecnicas h2 {
+  font-size: clamp(1.05rem, 1.6vw, 1.25rem);
+  margin: 18px 0 8px;
+}
+.nt-lead {
+  color: var(--nt-muted);
+  line-height: 1.6;
+}
+
+/* === layout a dos columnas === */
+.nt-body {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 360px; /* izquierda fluid, derecha fija */
+  gap: 16px;
+  align-items: start;
+  min-height: 0; /* importante para que el contenido pueda scrollear */
+}
+.nt-col {
+  min-width: 0;
+} /* evita overflow por contenido largo */
+
+/* columna derecha sticky dentro del scroll del artículo */
+.nt-col--side {
+  position: sticky;
+  top: 12px;
+  align-self: start;
+  display: grid;
+  gap: 12px;
+}
+
+/* bloques y elementos */
+.nt-callout {
+  background: var(--nt-callout-bg);
+  border: 1px solid #dbeafe;
+  border-radius: 10px;
+  padding: 12px 14px;
+}
+
+.nt-list,
+.nt-ordered {
+  margin: 8px 0 4px 1.2rem;
+}
+.nt-list li,
+.nt-ordered li {
+  margin: 6px 0;
+}
+
+.nt-kpis {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px;
+  margin: 12px 0 8px;
+}
+.nt-kpi {
+  border: 1px solid var(--nt-border);
+  border-radius: 10px;
+  padding: 10px;
+  background: #fafafa;
+}
+.nt-kpi__label {
+  color: var(--nt-muted);
+  font-size: 0.78rem;
+  margin-bottom: 4px;
+  display: block;
+}
+.nt-kpi__value {
+  font-weight: 700;
+}
+
+.nt-card {
+  border: 1px solid var(--nt-border);
+  border-radius: 10px;
+  padding: 10px;
+  background: #fff;
+}
+.nt-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 6px;
+  margin-bottom: 6px;
+}
+.nt-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.92rem;
+}
+.nt-table th,
+.nt-table td {
+  border-bottom: 1px solid var(--nt-border);
+  text-align: left;
+  padding: 6px 4px;
+}
+
+.nt-footer {
+  border-top: 1px dashed var(--nt-border);
+  margin-top: 16px;
+  padding-top: 10px;
+  color: var(--nt-muted);
+  font-size: 0.9rem;
+}
+
+/* responsive: una sola columna + sidebar al final */
+@media (max-width: 1024px) {
+  .nt-body {
+    grid-template-columns: 1fr;
+  }
+  .nt-col--side {
+    position: static;
+  }
+  .nt-kpis {
+    grid-template-columns: 1fr;
+  }
+}

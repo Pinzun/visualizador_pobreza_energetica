@@ -1,0 +1,52 @@
+services:
+  db:
+    image: mysql:8.0.28
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: visualizadorPE
+      MYSQL_USER: visualizador
+      MYSQL_PASSWORD: Ugpps123.
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 5s
+      timeout: 2s
+      retries: 5
+    ports:
+      - "3306:3306" # cambia a 3307:3306 si choca con MySQL local
+    volumes:
+      - database:/var/lib/mysql
+    restart: unless-stopped
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    volumes:
+      - ./backend/app:/app
+    env_file:
+      - ./backend/.env
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "4322:4322"
+    restart: unless-stopped
+
+  frontend:
+    build:
+      context: ./frontend/app
+      dockerfile: ../Dockerfile.dev # o Dockerfile.dev si está dentro de app
+    volumes:
+      - ./frontend/app:/app
+      - node_modules:/app/node_modules
+
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "5173:5173"
+    command: npm run dev
+    restart: unless-stopped
+
+volumes:
+  database:
+  node_modules:

@@ -1,0 +1,139 @@
+/* ================================
+   Home Layout Styles (responsive %)
+   src/styles/Home.css
+================================ */
+
+/* Variables “de diseño” para ajustar proporciones */
+:root {
+  --home-gap: 20px;
+  --home-pad: 20px;
+
+  /* proporción de columnas (izq:der) en desktop */
+  --left-col-w: 58%;
+  --right-col-w: 42%;
+
+  /* altura mínima del mapa (evita que se comprima demasiado) */
+  --map-min: clamp(300px, 35vh, 560px);
+}
+
+/* Contenedor principal: ocupa TODO el alto disponible del main */
+.home-wrapper {
+  width: 100%;
+  max-width: 2200px;
+  margin: 0 auto;
+  padding: var(--home-pad);
+  box-sizing: border-box;
+
+  height: 100%; /* ← coincide con .app-content (100vh - topbar) */
+  min-height: 0; /* ← vital en grid/flex para no empujar al header */
+  display: flex;
+  flex-direction: column;
+  gap: var(--home-gap);
+}
+
+/* Layout principal (dos columnas) sin alturas absolutas */
+.home-layout {
+  display: grid;
+  grid-template-columns:
+    minmax(0, calc(30% - var(--home-gap) / 2))
+    minmax(360px, calc(70% - var(--home-gap) / 2));
+  gap: var(--home-gap);
+  width: 100%;
+  padding: var(--home-pad);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  box-sizing: border-box;
+
+  /* Ocupar el alto disponible del wrapper */
+  flex: 1 1 auto;
+  min-height: 0; /* ← permite que los hijos manejen su overflow */
+}
+
+/* Columna izquierda: selects arriba + mapa ocupa el resto */
+.left-col {
+  display: grid;
+  grid-template-rows: auto 1fr; /* selects (alto auto) + mapa (resto) */
+  min-width: 480px;
+  min-height: 0; /* ← evita overflow forzado */
+  gap: 12px;
+}
+
+/* Barra de selects (alto auto) */
+.select-box {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  align-items: center;
+}
+
+/* El mapa llena el espacio disponible de la izquierda */
+.map-slot {
+  min-height: var(--map-min); /* seguridad en pantallas bajas */
+  min-width: 0; /* ← evita overflow horizontal */
+  display: flex;
+}
+
+/* Columna derecha: panel ocupa su celda */
+.info-slot {
+  min-width: 380px;
+  min-height: 0; /* ← importante para scroll interno si aplica */
+  overflow: visible;
+}
+
+/* Selects */
+.administrative-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-top: 1px;
+  margin-bottom: 16px;
+}
+
+.administrative-select select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* Notas técnicas: usa todo el alto restante */
+.home-layout--notas {
+  display: grid;
+  grid-auto-rows: 1fr; /* todo lo que haya dentro ocupa el alto disponible */
+  padding: var(--home-pad);
+  border: 1px solid #ccc;
+  border-radius: 10px;
+  min-height: 0;
+}
+
+.nt-pane {
+  min-height: 0;
+  overflow: auto; /* si crece, scrollea dentro */
+}
+
+.notas-tecnicas {
+  height: 100%;
+  overflow: auto;
+  max-width: 920px;
+  margin: 0 auto;
+}
+
+/* Responsive simple */
+@media (max-width: 1200px) {
+  :root {
+    --left-col-w: 100%;
+    --right-col-w: 100%;
+  }
+  .home-layout {
+    grid-template-columns: 1fr; /* apila columnas */
+  }
+  .left-col,
+  .info-slot {
+    min-width: 0;
+  }
+  .map-slot {
+    min-height: clamp(320px, 45vh, 600px);
+  }
+}

@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64">
+  <!-- Izquierda azul (29px) -->
+  <rect x="0" y="0" width="29" height="64" fill="#0f69b4"/>
+  <!-- Derecha rojo (64-29=35px) -->
+  <rect x="29" y="0" width="35" height="64" fill="#eb3c46"/>
+</svg>

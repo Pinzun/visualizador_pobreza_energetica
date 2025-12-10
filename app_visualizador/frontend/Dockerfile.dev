@@ -1,0 +1,20 @@
+FROM node:20-bullseye-slim
+
+WORKDIR /app
+
+# Copia únicamente manifest y lock para aprovechar la cache
+COPY package.json package-lock.json* ./
+
+# Instala EXACTAMENTE lo del lockfile
+RUN npm ci
+
+# Copia el resto del código
+COPY . .
+
+# Vite en Docker (HMR y file-watching)
+ENV HOST=0.0.0.0
+ENV CHOKIDAR_USEPOLLING=1
+
+EXPOSE 5173
+
+CMD ["npm", "run", "dev", "--", "--host", "0.0.0.0"]

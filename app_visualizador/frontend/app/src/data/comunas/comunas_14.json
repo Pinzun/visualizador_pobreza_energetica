@@ -1,0 +1,14 @@
+{
+    "14101":{"CUT_REG":   "14", "CUT_COM":  "14101",  "NOMBRE":  "Valdivia"},
+    "14102":{"CUT_REG":   "14", "CUT_COM":  "14102",  "NOMBRE":  "Corral"},
+    "14103":{"CUT_REG":   "14", "CUT_COM":  "14103",  "NOMBRE":  "Lanco"},
+    "14104":{"CUT_REG":   "14", "CUT_COM":  "14104",  "NOMBRE":  "Los Lagos"},
+    "14105":{"CUT_REG":   "14", "CUT_COM":  "14105",  "NOMBRE":  "Máfil"},
+    "14106":{"CUT_REG":   "14", "CUT_COM":  "14106",  "NOMBRE":  "Mariquina"},
+    "14107":{"CUT_REG":   "14", "CUT_COM":  "14107",  "NOMBRE":  "Paillaco"},
+    "14108":{"CUT_REG":   "14", "CUT_COM":  "14108",  "NOMBRE":  "Panguipulli"},
+    "14201":{"CUT_REG":   "14", "CUT_COM":  "14201",  "NOMBRE":  "La Unión"},
+    "14202":{"CUT_REG":   "14", "CUT_COM":  "14202",  "NOMBRE":  "Futrono"},
+    "14203":{"CUT_REG":   "14", "CUT_COM":  "14203",  "NOMBRE":  "Lago Ranco"},
+    "14204":{"CUT_REG":   "14", "CUT_COM":  "14204",  "NOMBRE":  "Río Bueno"}
+}

@@ -1,0 +1,56 @@
+{
+  "acceso": {
+    "key": "acceso",
+    "label": "Acceso",
+    "indicators": [
+      {
+        "value": "acceso_electricidad",
+        "label": "Acceso a la electricidad en hogares"
+      },
+      {
+        "value": "acceso_coccion",
+        "label": "Hogares sin sistema de cocción de alimentos"
+      },
+      {
+        "value": "acceso_agua_caliente",
+        "label": "Hogares sin sistema de agua caliente"
+      }
+    ]
+  },
+  "calidad": {
+    "key": "calidad",
+    "label": "Calidad",
+    "indicators": [
+      { "value": "calidad_coccion", "label": "Cocción de alimentos" },
+      { "value": "calidad_calefaccion", "label": "Calefacción residencial" },
+      {
+        "value": "calidad_saidi",
+        "label": "Interrupción del servicio eléctrico"
+      }
+    ]
+  },
+  "asequibilidad": {
+    "key": "asequibilidad",
+    "label": "Asequibilidad",
+    "indicators": [
+      {
+        "value": "habitabilidad_irrecuperable",
+        "label": "Viviendas en condición irrecuperable"
+      }
+    ]
+  },
+  "habitabilidad": {
+    "key": "habitabilidad",
+    "label": "Habitabilidad",
+    "indicators": [
+      {
+        "value": "habitabilidad_ineficiencia_termica",
+        "label": "Viviendas ineficientes térmicamente"
+      },
+      {
+        "value": "bajos_ingresos_zonas_frias",
+        "label": "Hogares con bajos ingresos en zonas frías"
+      }
+    ]
+  }
+}

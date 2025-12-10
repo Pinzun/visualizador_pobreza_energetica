@@ -1,0 +1,13 @@
+{
+    "12101":{"CUT_REG":   "12", "CUT_COM":  "12101",  "NOMBRE":  "Punta Arenas"},
+    "12102":{"CUT_REG":   "12", "CUT_COM":  "12102",  "NOMBRE":  "Laguna Blanca"},
+    "12103":{"CUT_REG":   "12", "CUT_COM":  "12103",  "NOMBRE":  "Río Verde"},
+    "12104":{"CUT_REG":   "12", "CUT_COM":  "12104",  "NOMBRE":  "San Gregorio"},
+    "12201":{"CUT_REG":   "12", "CUT_COM":  "12201",  "NOMBRE":  "Cabo de Hornos"},
+    "12202":{"CUT_REG":   "12", "CUT_COM":  "12202",  "NOMBRE":  "Antártica"},
+    "12301":{"CUT_REG":   "12", "CUT_COM":  "12301",  "NOMBRE":  "Porvenir"},
+    "12302":{"CUT_REG":   "12", "CUT_COM":  "12302",  "NOMBRE":  "Primavera"},
+    "12303":{"CUT_REG":   "12", "CUT_COM":  "12303",  "NOMBRE":  "Timaukel"},
+    "12401":{"CUT_REG":   "12", "CUT_COM":  "12401",  "NOMBRE":  "Natales"},
+    "12402":{"CUT_REG":   "12", "CUT_COM":  "12402",  "NOMBRE":  "Torres del Paine"}
+}

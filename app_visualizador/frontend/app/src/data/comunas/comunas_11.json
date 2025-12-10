@@ -1,0 +1,12 @@
+{
+    "11101":{"CUT_REG":   "11", "CUT_COM":  "11101",  "NOMBRE":  "Coyhaique"},
+    "11102":{"CUT_REG":   "11", "CUT_COM":  "11102",  "NOMBRE":  "Lago Verde"},
+    "11201":{"CUT_REG":   "11", "CUT_COM":  "11201",  "NOMBRE":  "Aysén"},
+    "11202":{"CUT_REG":   "11", "CUT_COM":  "11202",  "NOMBRE":  "Cisnes"},
+    "11203":{"CUT_REG":   "11", "CUT_COM":  "11203",  "NOMBRE":  "Guaitecas"},
+    "11301":{"CUT_REG":   "11", "CUT_COM":  "11301",  "NOMBRE":  "Cochrane"},
+    "11302":{"CUT_REG":   "11", "CUT_COM":  "11302",  "NOMBRE":  "O'Higgins"},
+    "11303":{"CUT_REG":   "11", "CUT_COM":  "11303",  "NOMBRE":  "Tortel"},
+    "11401":{"CUT_REG":   "11", "CUT_COM":  "11401",  "NOMBRE":  "Chile Chico"},
+    "11402":{"CUT_REG":   "11", "CUT_COM":  "11402",  "NOMBRE":  "Río Ibáñez"}
+}

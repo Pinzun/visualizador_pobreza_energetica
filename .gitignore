@@ -1,0 +1,22 @@
+# Node
+node_modules/
+
+# Python
+venv/
+__pycache__/
+*.pyc
+
+# React
+dist/
+.env
+.DS_Store
+
+# Logs y caché
+*.log
+.cache/
+
+# Vite
+.vite/
+
+/auxiliares/
+bases

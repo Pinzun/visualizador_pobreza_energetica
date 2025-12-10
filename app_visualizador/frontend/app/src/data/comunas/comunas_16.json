@@ -1,0 +1,23 @@
+{
+    "16101":{"CUT_REG":   "16", "CUT_COM":  "16101",  "NOMBRE":  "Chillán"},
+    "16102":{"CUT_REG":   "16", "CUT_COM":  "16102",  "NOMBRE":  "Bulnes"},
+    "16103":{"CUT_REG":   "16", "CUT_COM":  "16103",  "NOMBRE":  "Chillán Viejo"},
+    "16104":{"CUT_REG":   "16", "CUT_COM":  "16104",  "NOMBRE":  "El Carmen"},
+    "16105":{"CUT_REG":   "16", "CUT_COM":  "16105",  "NOMBRE":  "Pemuco"},
+    "16106":{"CUT_REG":   "16", "CUT_COM":  "16106",  "NOMBRE":  "Pinto"},
+    "16107":{"CUT_REG":   "16", "CUT_COM":  "16107",  "NOMBRE":  "Quillón"},
+    "16108":{"CUT_REG":   "16", "CUT_COM":  "16108",  "NOMBRE":  "San Ignacio"},
+    "16109":{"CUT_REG":   "16", "CUT_COM":  "16109",  "NOMBRE":  "Yungay"},
+    "16201":{"CUT_REG":   "16", "CUT_COM":  "16201",  "NOMBRE":  "Quirihue"},
+    "16202":{"CUT_REG":   "16", "CUT_COM":  "16202",  "NOMBRE":  "Cobquecura"},
+    "16203":{"CUT_REG":   "16", "CUT_COM":  "16203",  "NOMBRE":  "Coelemu"},
+    "16204":{"CUT_REG":   "16", "CUT_COM":  "16204",  "NOMBRE":  "Ninhue"},
+    "16205":{"CUT_REG":   "16", "CUT_COM":  "16205",  "NOMBRE":  "Portezuelo"},
+    "16206":{"CUT_REG":   "16", "CUT_COM":  "16206",  "NOMBRE":  "Ranquil"},
+    "16207":{"CUT_REG":   "16", "CUT_COM":  "16207",  "NOMBRE":  "Treguaco"},
+    "16301":{"CUT_REG":   "16", "CUT_COM":  "16301",  "NOMBRE":  "San Carlos"},
+    "16302":{"CUT_REG":   "16", "CUT_COM":  "16302",  "NOMBRE":  "Coihueco"},
+    "16303":{"CUT_REG":   "16", "CUT_COM":  "16303",  "NOMBRE":  "Ñiquén"},
+    "16304":{"CUT_REG":   "16", "CUT_COM":  "16304",  "NOMBRE":  "San Fabián"},
+    "16305":{"CUT_REG":   "16", "CUT_COM":  "16305",  "NOMBRE":  "San Nicolás"}     
+}

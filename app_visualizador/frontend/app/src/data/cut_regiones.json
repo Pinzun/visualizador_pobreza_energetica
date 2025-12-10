@@ -1,0 +1,27 @@
+{
+  "15": { "CUT_REG": "15", "NOMBRE": "Región de Arica y Parinacota" },
+  "01": { "CUT_REG": "01", "NOMBRE": "Región de Tarapacá" },
+  "02": { "CUT_REG": "02", "NOMBRE": "Región de Antofagasta" },
+  "03": { "CUT_REG": "03", "NOMBRE": "Región de Atacama" },
+  "04": { "CUT_REG": "04", "NOMBRE": "Región de Coquimbo" },
+  "05": { "CUT_REG": "05", "NOMBRE": "Región de Valparaíso" },
+  "13": { "CUT_REG": "13", "NOMBRE": "Región Metropolitana de Santiago" },
+  "06": {
+    "CUT_REG": "06",
+    "NOMBRE": "Región del Libertador General Bernardo O’Higgins"
+  },
+  "07": { "CUT_REG": "07", "NOMBRE": "Región del Maule" },
+  "16": { "CUT_REG": "16", "NOMBRE": "Región de Ñuble" },
+  "08": { "CUT_REG": "08", "NOMBRE": "Región del Biobío" },
+  "09": { "CUT_REG": "09", "NOMBRE": "Región de La Araucanía" },
+  "14": { "CUT_REG": "14", "NOMBRE": "Región de Los Ríos" },
+  "10": { "CUT_REG": "10", "NOMBRE": "Región de Los Lagos" },
+  "11": {
+    "CUT_REG": "11",
+    "NOMBRE": "Región de Aysén del General Carlos Ibáñez del Campo"
+  },
+  "12": {
+    "CUT_REG": "12",
+    "NOMBRE": "Región de Magallanes y de la Antártica Chilena"
+  }
+}

@@ -1,0 +1,11 @@
+{
+"3101":{"CUT_REG":   "03", "CUT_COM":  "3101",  "NOMBRE":  "Copiapó"},
+"3102":{"CUT_REG":   "03", "CUT_COM":  "3102",  "NOMBRE":  "Caldera"},
+"3103":{"CUT_REG":   "03", "CUT_COM":  "3103",  "NOMBRE":  "Tierra Amarilla"},
+"3201":{"CUT_REG":   "03", "CUT_COM":  "3201",  "NOMBRE":  "Chañaral"},
+"3202":{"CUT_REG":   "03", "CUT_COM":  "3202",  "NOMBRE":  "Diego de Almagro"},
+"3301":{"CUT_REG":   "03", "CUT_COM":  "3301",  "NOMBRE":  "Vallenar"},
+"3302":{"CUT_REG":   "03", "CUT_COM":  "3302",  "NOMBRE":  "Alto del Carmen"},
+"3303":{"CUT_REG":   "03", "CUT_COM":  "3303",  "NOMBRE":  "Freirina"},
+"3304":{"CUT_REG":   "03", "CUT_COM":  "3304",  "NOMBRE":  "Huasco"}
+}

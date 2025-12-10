@@ -1,0 +1,11 @@
+/* src/styles/public-shell.css */
+.public-shell {
+  display: grid;
+  grid-template-rows: 56px 1fr;
+  height: 100vh;
+}
+
+.public-content {
+  position: relative;
+  overflow: hidden;
+}

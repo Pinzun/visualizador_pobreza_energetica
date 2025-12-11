@@ -12,11 +12,13 @@ export default function useIndicador(
 
   useEffect(() => {
     let cancelled = false;
+    console.log("useIndicador: indicator=", indicator, "cut=", cut);
     (async () => {
       setLoading(true);
       setError(null);
       try {
         const payload = await fetchIndicador(indicator, cut);
+        console.log("Fetched indicador payload:", payload);
         if (!cancelled) setData(payload);
       } catch (e: any) {
         if (!cancelled) setError(e?.message || "Error cargando indicador");

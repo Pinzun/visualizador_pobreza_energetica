@@ -73,6 +73,7 @@ export async function fetchIndicador(
   const base =
     INDICATOR_ENDPOINTS[key] ?? INDICATOR_ENDPOINTS[DEFAULT_INDICATOR];
 
+  console.log("Fetching indicador:", key, "from", base, "cut:", cut);
   const url = cut ? `${base}?cut=${encodeURIComponent(cut)}` : base;
   const res = await fetch(url, { credentials: "include", cache: "no-store" });
   if (!res.ok) throw new Error(`API ${res.status}`);

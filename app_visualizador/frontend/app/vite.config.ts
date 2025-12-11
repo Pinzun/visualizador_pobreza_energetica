@@ -70,7 +70,8 @@ export default defineConfig(({ mode }) => {
   const HOST = env.VITE_HOST || true; // true = 0.0.0.0
   const HMR_HOST = env.VITE_HMR_HOST || "127.0.0.1";
 
-  const BACKEND_ORIGIN = env.VITE_BACKEND_ORIGIN || "http://backend:4322";
+  // const BACKEND_ORIGIN = env.VITE_BACKEND_ORIGIN || "http://backend:4322";
+  const BACKEND_ORIGIN = "http://pobrezaenergetica_backend.minenergia.cl";
   const DISABLE_BACKEND = bool(env.VITE_DISABLE_BACKEND);
   const DOCKER_POLL = bool(env.VITE_DOCKER_POLL);
 

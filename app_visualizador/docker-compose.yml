@@ -34,7 +34,7 @@ services:
 
   frontend:
     build:
-      context: ./app_visualizador/frontend
+      context: ./frontend
       dockerfile: Dockerfile.dev
     volumes:
       - './app_visualizador/frontend/app:/app'

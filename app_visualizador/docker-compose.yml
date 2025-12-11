@@ -22,14 +22,14 @@ services:
       context: ./backend
       dockerfile: Dockerfile.dev
     volumes:
-      - ./backend/app:/app
+      - ./backend/app:/app    
     env_file:
       - ./backend/.env
     depends_on:
       db:
         condition: service_healthy
     ports:
-      - "4322:4322"
+      - "4322:4322"           
     restart: unless-stopped
 
   frontend:

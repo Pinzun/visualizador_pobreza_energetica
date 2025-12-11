@@ -5,7 +5,7 @@ ENV PYTHONDONTWRITEBYTECODE=1 \
 
 WORKDIR /app
 
-# Instalar deps de Python (sin apt)
+# Instalar deps de Python
 COPY ./app/requirements.txt .
 RUN pip install --no-cache-dir --upgrade pip \
  && pip install --no-cache-dir -r requirements.txt
@@ -13,8 +13,7 @@ RUN pip install --no-cache-dir --upgrade pip \
 # Copiar código
 COPY ./app .
 
-EXPOSE 8000
+# El backend escuchará en 4322 dentro del contenedor
 ENV FLASK_ENV=development
-
-# Ajusta si tu entrypoint es distinto
-CMD ["python", "app.py"]
+ENV PORT=4322
+EXPOSE 4322

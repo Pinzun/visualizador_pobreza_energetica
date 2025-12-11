@@ -37,8 +37,8 @@ services:
       context: ./frontend
       dockerfile: Dockerfile.dev
     volumes:
-      - './app_visualizador/frontend/app:/app'
-      - 'node_modules:/app/node_modules'
+      - './frontend/app:/app'
+      # - 'node_modules:/app/node_modules'
     environment:
       - NODE_ENV=development
     ports:

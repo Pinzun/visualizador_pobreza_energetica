@@ -29,7 +29,7 @@ services:
       db:
         condition: service_healthy
     ports:
-      - "4322:4322"           
+      - "8000:8000"           
     restart: unless-stopped
 
   frontend:

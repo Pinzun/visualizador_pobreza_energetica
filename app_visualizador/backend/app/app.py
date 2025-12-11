@@ -29,7 +29,8 @@ def create_app():
     # ---------------------------
     # Configuración de CORS
     # ---------------------------
-    cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+    # cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+    cors_origins = ["http://pobrezaenergetica.minenergia.cl", "https://pobrezaenergetica.minenergia.cl"]
     CORS(app, supports_credentials=False, origins=cors_origins)
 
     # ---------------------------

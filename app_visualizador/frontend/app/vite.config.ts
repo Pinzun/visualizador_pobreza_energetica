@@ -122,6 +122,10 @@ export default defineConfig(({ mode }) => {
           }
         : { usePolling: false },
       fs: { strict: true },
+      allowedHosts: [
+                      "pobrezaenergetica.minenergia.cl",
+                      "pobrezaenergetica_backend.minenergia.cl"
+                    ],
     },
 
     optimizeDeps: {

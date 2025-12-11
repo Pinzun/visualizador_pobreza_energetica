@@ -31,7 +31,7 @@ def create_app():
     # ---------------------------
     # cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
     cors_origins = ["http://pobrezaenergetica.minenergia.cl", "https://pobrezaenergetica.minenergia.cl"]
-    CORS(app, supports_credentials=False, origins=cors_origins)
+    CORS(app, supports_credentials=True, origins=cors_origins)
 
     # ---------------------------
     # Registro de blueprints

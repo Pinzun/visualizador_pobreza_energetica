@@ -15,6 +15,22 @@ COPY ./app .
 
 ENV FLASK_ENV=development
 ENV PORT=4322
+
+ENV FLASK_APP=app.py
+ENV FLASK_ENV=development
+ENV FLASK_DEBUG=1
+ENV SECRET_KEY=VPE_DADS2025
+
+ENV DB_USER=visualizador
+ENV DB_PASSWORD=Ugpps123.
+ENV DB_HOST=db
+ENV DB_NAME=visualizadorPE
+ENV DB_PORT=3306
+
+ENV CORS_ORIGINS=http://localhost:5173,http://127.0.0.1:5173,https://pobrezaenergetica.minenergia.cl
+
+ENV PORT=4322
+
 EXPOSE 4322
 
 

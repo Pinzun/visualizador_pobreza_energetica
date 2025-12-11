@@ -16,3 +16,6 @@ COPY ./app .
 ENV FLASK_ENV=development
 ENV PORT=4322
 EXPOSE 4322
+
+
+CMD ["python", "app.py"]

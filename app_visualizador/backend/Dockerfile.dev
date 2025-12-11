@@ -14,5 +14,5 @@ RUN pip install --no-cache-dir --upgrade pip \
 COPY ./app .
 
 ENV FLASK_ENV=development
-ENV PORT=8002
-EXPOSE 8002
+ENV PORT=4322
+EXPOSE 4322

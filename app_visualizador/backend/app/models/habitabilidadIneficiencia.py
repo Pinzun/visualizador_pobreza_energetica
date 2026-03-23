@@ -10,11 +10,13 @@ class HabitabilidadIneficiencia (db.Model):
     CUT_REG = db.Column(db.Integer, nullable=False)
     CUT_COM = db.Column(db.Integer, nullable=False)
 
-    # ─────────── Identificación temporal ───────────
-    ANIO = db.Column(db.Integer, nullable=False)
-    MES = db.Column(db.Integer, nullable=False)
+    # ─────────── Resultado de indicadores por comuna (totales) ───────────
+    CENSO2024 = db.Column(db.Integer, nullable=False)
+    TOTAL_2000 = db.Column(db.Integer, nullable=False)
+    TOTAL_2000_2006 = db.Column(db.Integer, nullable=False)
+    TOTAL_2007_2024 = db.Column(db.Integer, nullable=False)
 
-    # ─────────── Indicadores de permisos ───────────
-    FOLIO	= db.Column(db.String(50), nullable=False)
-    DV_FOLIO	= db.Column(db.Integer, nullable=False)
-    TIPO_PERMISO	= db.Column(db.String(50), nullable=False)			
+    # ─────────── Resultado de indicadores por comuna (porcentaje) ───────────
+    PORCENTAJE_2000	= db.Column(db.Integer, nullable=False)
+    PORCENTAJE_2000_2006	= db.Column(db.Integer, nullable=False)
+    PORCENTAJE_2007_2024	= db.Column(db.Integer, nullable=False)			

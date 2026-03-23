@@ -10,7 +10,7 @@ RUN npm ci
 
 # 3. Copiar el resto del código
 COPY app/. .
-
+COPY .env .env
 # Vite en Docker (HMR y file-watching)
 ENV HOST=0.0.0.0
 ENV CHOKIDAR_USEPOLLING=1

@@ -1,25 +1,19 @@
 # services/calidad_calefaccion.py
-from models import (CalidadCenso, Casen, CasenComunaProvincia)
+from models import (CalidadCenso, Casen, CasenComunaProvincia, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom, 
                                            construir_leyenda_mapa, calcular_colores_mapa)
 from sqlalchemy import func, case, and_
 
-# A la fecha: 30-09-2025
-# Información de contexto (modificar tras cambios, mantener indicadores actualizados):
+# A la fecha: 06-01-2026
+# Formula del indicador:
 
 # ┌───────────────────────────────────────────────────────────────────────────────────────────────────┐
-# │   Se mantiene la lógica báse de los indicadores, se modifican los retornos principales para       │
-# │   responder a los despliegues del front.                                                          │
-# │                                                                                                   │                                    
-# │   Acorde a la ficha de indicadores del Visualizador de PE, el indicador es:                       │
 # │                                                                                                   │
 # │                                                         N° de viviendas que utiliza comb.         │
 # │                                                         contaminantes para calefaccionar          │
 # │    Combustibles contaminantes para calefacción    =     ───────────────────────────────   x 100   │
 # │                   residencial                              N° de viviendas totales                │           
 # │                                                                                                   │ 
-# │   El indicador ahora incorpora lógica para la CASEN y para el CENSO, además de integrar las       │
-# │   funciones requeridas para el mapa de calor.                                                     │
 # └───────────────────────────────────────────────────────────────────────────────────────────────────┘
 
 # ┌───────────────────────────────────────────────────┐
@@ -64,7 +58,7 @@ def calcular_indicadores_casen(filtro, session):
         # que serían todos los valores 3 y 4 en la columna V34B.
         func.sum(
             case(
-                (Casen.V34B.in_([3, 4]), 1),
+                (Casen.V34B.in_([3, 4]), Casen.EXPR),
                 else_=0
             )    
         )
@@ -73,9 +67,9 @@ def calcular_indicadores_casen(filtro, session):
     # es un cálculo nacional, regional o comunal.
     ).filter(filtro_indicador).scalar() or 0
 
-    # Se calcula el total de viviendas, filtrando por medio de la columna "id".
+    # Se calcula el total de viviendas ponderadas por el factor de expansión.
     total_viviendas = session.query(
-        func.count(Casen.id)
+        func.sum(Casen.EXPR)
     ).filter(filtro_indicador).scalar() or 0
 
     # Se calcula el indicador, que es el porcentaje de viviendas sin acceso a electricidad
@@ -94,10 +88,10 @@ def calcular_indicadores_casen(filtro, session):
 # por el valor asociado a cada respuesta.
 def calidad_tipo_combustible_censo_casen(filtro, session):
      def _sum(col, valor):
-          q = session.query(func.sum(case((col == valor, 1), else_=0)))
-          if filtro is not True and filtro is not None:
+        q = session.query(func.sum(case((col == valor, Casen.EXPR), else_=0)))
+        if filtro is not True and filtro is not None:
                q = q.filter(filtro)
-          return q.scalar() or 0
+        return q.scalar() or 0
      
      gas_licuado = _sum(Casen.V34B, 1)
      gas_red = _sum(Casen.V34B, 2)
@@ -128,6 +122,12 @@ def calidad_tipo_combustible_censo_casen(filtro, session):
 def obtener_calidad_calefaccion_casen(cut, session):
     resultados = {}
 
+    if resultados.get("fuente") is None:
+        try:
+            resultados["fuente"] = ("CASEN" + " " + str(session.query(ConfigFuentes).first().anio_casen))
+        except Exception:
+            resultados["fuente"] = "CASEN"
+
     if cut is None:
         # En el caso del CUT nacional (None) se despliegan los datos del indicador
         # en base a las regiones. 
@@ -147,7 +147,7 @@ def obtener_calidad_calefaccion_casen(cut, session):
             ind = calcular_indicadores_casen(filtro, session)
             cod = str(cut_reg).zfill(2)
             desglose_regional[cod] = ind
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_comb_contaminante", 0))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
 
         # Se calcula el mapa de calor a nivel nacional.
         resultados["tipo"] = calidad_tipo_combustible_censo_casen(filtro_nacional, session)
@@ -195,7 +195,7 @@ def obtener_calidad_calefaccion_casen(cut, session):
         for cut_com, folios_comuna in folios_por_comuna.items():
             filtro_com = Casen.FOLIO.in_(folios_comuna)
             indicadores = calcular_indicadores_casen(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje_sin_acceso", 0))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje", 0))
 
         resultados["tipo"] = calidad_tipo_combustible_censo_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)
@@ -204,13 +204,13 @@ def obtener_calidad_calefaccion_casen(cut, session):
 
     else:
         # Filtro comunal.
-            folios = session.query(CasenComunaProvincia.FOLIO).filter(
-                CasenComunaProvincia.CUT_COM == int(cut)
-            ).all()
-            folios_lista = [f[0] for f in folios]
-            filtro = Casen.FOLIO.in_(folios_lista)
-            resultados["tipo"] = calidad_tipo_combustible_censo_casen(filtro, session)
-            resultados["desglose"] = calcular_indicadores_casen(filtro, session)
+        folios = session.query(CasenComunaProvincia.FOLIO).filter(
+            CasenComunaProvincia.CUT_COM == int(cut)
+        ).all()
+        folios_lista = [f[0] for f in folios]
+        filtro = Casen.FOLIO.in_(folios_lista)
+        resultados["tipo"] = calidad_tipo_combustible_censo_casen(filtro, session)
+        resultados["desglose"] = calcular_indicadores_casen(filtro, session)
     
     return resultados
 
@@ -286,6 +286,12 @@ def calidad_tipo_combustible_censo(filtro, session):
 def obtener_calidad_calefaccion_censo(cut, session):
     resultados = {}
 
+    if resultados.get("fuente") is None:
+        try:
+            resultados["fuente"] = ("CENSO" + " " + str(session.query(ConfigFuentes).first().anio_censo))
+        except Exception:
+            resultados["fuente"] = "CENSO"
+            
     if cut is None:
         # En el caso del "filtro_nacional", retorna todos los datos.
         filtro_nacional = True  
@@ -301,7 +307,7 @@ def obtener_calidad_calefaccion_censo(cut, session):
             filtro_reg = CalidadCenso.CUT_REG == cut_reg
             ind = calcular_indicadores_censo(filtro_reg, session)
             cod = str(cut_reg).zfill(2)
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_comb_contaminante", 0))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
 
         resultados["tipo"] = calidad_tipo_combustible_censo(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_censo(filtro_nacional, session)
@@ -323,7 +329,7 @@ def obtener_calidad_calefaccion_censo(cut, session):
             cut_com = com[0]
             filtro_com = CalidadCenso.CUT_COM == cut_com
             ind = calcular_indicadores_censo(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_comb_contaminante", 0))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje", 0))
         
         # Se agrega desgloses y resultados de mapa de calor al retorno final.
         resultados["tipo"] = calidad_tipo_combustible_censo(filtro_regional, session)

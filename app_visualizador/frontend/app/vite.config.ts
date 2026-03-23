@@ -8,8 +8,8 @@ const bool = (v?: string, def = false) =>
 
 /** Plugin de headers + cache, parametrizable por env */
 const createStaticHeadersPlugin = (opts: {
-  cacheMaxAge: number; // segundos
-  tilesPrefixes: string[]; // ej: ['/geo/zips/', '/geo/tiles/']
+  cacheMaxAge: number;
+  tilesPrefixes: string[];
 }) => {
   const { cacheMaxAge, tilesPrefixes } = opts;
   return {
@@ -18,7 +18,6 @@ const createStaticHeadersPlugin = (opts: {
       server.middlewares.use((req: any, res: any, next: any) => {
         const url = req.url || "";
 
-        // Content-Type por extensión
         if (url.endsWith(".pbf"))
           res.setHeader("Content-Type", "application/x-protobuf");
         else if (url.endsWith(".geojson"))
@@ -26,7 +25,6 @@ const createStaticHeadersPlugin = (opts: {
         else if (url.endsWith(".zip"))
           res.setHeader("Content-Type", "application/zip");
 
-        // Cache agresivo para tiles/archivos pesados
         const matchesPrefix = tilesPrefixes.some((p) => url.startsWith(p));
         if (
           matchesPrefix ||
@@ -36,7 +34,7 @@ const createStaticHeadersPlugin = (opts: {
         ) {
           res.setHeader(
             "Cache-Control",
-            `public, max-age=${cacheMaxAge}, immutable`
+            `public, max-age=${cacheMaxAge}, immutable`,
           );
         }
         next();
@@ -45,14 +43,14 @@ const createStaticHeadersPlugin = (opts: {
   };
 };
 
-/** Plugin para “simular” /api apagado en dev */
+/** Plugin para "simular" /api apagado en dev */
 const devApiBypassPlugin = (disableBackend: boolean) => ({
   name: "dev-api-bypass",
   configureServer(server: any) {
     if (!disableBackend) return;
     server.middlewares.use((req: any, res: any, next: any) => {
       if (req.url?.startsWith("/api/")) {
-        res.statusCode = 204; // No Content
+        res.statusCode = 204;
         return res.end();
       }
       next();
@@ -61,24 +59,27 @@ const devApiBypassPlugin = (disableBackend: boolean) => ({
 });
 
 export default defineConfig(({ mode }) => {
-  // Carga TODAS las variables (con y sin prefijo VITE_)
   const env = loadEnv(mode, process.cwd(), "");
 
-  // ---------- Flags / valores desde .env ----------
-  const DEBUG = bool(env.VITE_DEBUG, mode !== "production");
-  const PORT = Number(env.VITE_PORT || 5173);
-  const HOST = env.VITE_HOST || true; // true = 0.0.0.0
-  const HMR_HOST = env.VITE_HMR_HOST || "127.0.0.1";
+  // ← NUEVO: process.env tiene prioridad sobre .env (útil en Docker)
+  const getEnv = (key: string) => process.env[key] ?? env[key];
 
-  // const BACKEND_ORIGIN = env.VITE_BACKEND_ORIGIN || "http://backend:4322";
-  const BACKEND_ORIGIN = "http://pobrezaenergetica_backend.minenergia.cl";
-  const DISABLE_BACKEND = bool(env.VITE_DISABLE_BACKEND);
-  const DOCKER_POLL = bool(env.VITE_DOCKER_POLL);
+  // ---------- Flags / valores desde .env ----------
+  const DEBUG = bool(getEnv("VITE_DEBUG"), mode !== "production");
+  const PORT = Number(getEnv("VITE_PORT") || 5173);
+  const HOST = getEnv("VITE_HOST") || true;
+  const HMR_HOST = getEnv("VITE_HMR_HOST") || "127.0.0.1";
+
+  const BACKEND_ORIGIN = getEnv("VITE_BACKEND_ORIGIN") || "http://backend:4322";
+  const DISABLE_BACKEND = bool(getEnv("VITE_DISABLE_BACKEND"));
+  const DOCKER_POLL = bool(getEnv("VITE_DOCKER_POLL"));
 
   const STATIC_CACHE_MAX_AGE = Number(
-    envV(env, "VITE_STATIC_CACHE_MAX_AGE", "31536000")
-  ); // 1 año
-  const TILES_PREFIXES = (env.VITE_TILES_PREFIXES || "/geo/zips/,/geo/tiles/")
+    getEnv("VITE_STATIC_CACHE_MAX_AGE") || "31536000",
+  );
+  const TILES_PREFIXES = (
+    getEnv("VITE_TILES_PREFIXES") || "/geo/zips/,/geo/tiles/"
+  )
     .split(",")
     .map((s) => s.trim())
     .filter(Boolean);
@@ -105,7 +106,7 @@ export default defineConfig(({ mode }) => {
         ? {}
         : {
             "/api": {
-              target: BACKEND_ORIGIN, // ← del .env
+              target: BACKEND_ORIGIN,
               changeOrigin: true,
               secure: false,
             },
@@ -124,9 +125,9 @@ export default defineConfig(({ mode }) => {
         : { usePolling: false },
       fs: { strict: true },
       allowedHosts: [
-                      "pobrezaenergetica.minenergia.cl",
-                      "pobrezaenergetica_backend.minenergia.cl"
-                    ],
+        "pobrezaenergetica.minenergia.cl",
+        "pobrezaenergetica_backend.minenergia.cl",
+      ],
     },
 
     optimizeDeps: {
@@ -142,10 +143,9 @@ export default defineConfig(({ mode }) => {
     },
 
     build: {
-      sourcemap: DEBUG, // activa mapas si estás en debug
+      sourcemap: DEBUG,
     },
 
-    // Opcional: define una constante global para tree-shaking de logs
     define: {
       __APP_DEBUG__: JSON.stringify(DEBUG),
     },

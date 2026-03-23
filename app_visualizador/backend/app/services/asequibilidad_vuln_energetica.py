@@ -1,10 +1,10 @@
-# services/habtiabilidad_ineficiencia.py
-from models import HabitabilidadIneficiencia
+# services/asequibilidad_vuln_energetica.py
+from models import AsequibilidadVulnerable
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            calcular_colores_mapa, construir_leyenda_mapa)
-from sqlalchemy import func, case, and_
+from sqlalchemy import func
 
-# Cambios registrados a la fecha: 18-12-2025
+# Cambios registrados a la fecha: 27-02-2026
 
 # ┌───────────────────────────────────────────────────┐
 # │ 1) Configuración básica para despliegue de datos  │ 
@@ -13,7 +13,7 @@ from sqlalchemy import func, case, and_
 # Datos modificables para la configuración base acorde a los despliegues de cada indicador.
 
 # Título del indicador.
-titulo = "% de viviendas por normativa térmica vigente"
+titulo = "comunas vulnerables por criterio eléctrico y social"
 
 # Datos de corte del mapa.
 CORTES = [
@@ -38,85 +38,76 @@ PALETA = [
 # └─────────────────────────────────┘
 
 def calcular_indicador(filtro, session):
-    total_censo2024 = session.query(func.sum(HabitabilidadIneficiencia.CENSO2024)).filter(filtro).scalar()
-    total_2000_2006 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2000_2006)).filter(filtro).scalar()
-    total_2007_2024 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2007_2024)).filter(filtro).scalar()
+    total_vulnerable = session.query(func.count()).select_from(AsequibilidadVulnerable).filter(
+        filtro, AsequibilidadVulnerable.VULN_ENERGETICA == 1
+    ).scalar() or 0
+    total = session.query(func.count()).select_from(AsequibilidadVulnerable).filter(filtro).scalar() or 0
 
-    # Checkeo de None para evitar errores en cálculos
-    total_censo2024 = total_censo2024 or 0
-    total_2000_2006 = total_2000_2006 or 0
-    total_2007_2024 = total_2007_2024 or 0
-
-    if total_censo2024 == 0:
-        indicador = 0
-    else:
-        indicador = ((total_2000_2006 + total_2007_2024)/total_censo2024)
+    indicador = (total_vulnerable / total * 100) if total else 0.0
 
     return {
-        "total_viviendas": formato_chileno(total_censo2024),
-        "total_viviendas_reglamento": formato_chileno(total_2000_2006 + total_2007_2024),
-        "porcentaje_eficiente": formato_chileno_prom(indicador)}
+        "total_comunas_vulnerables": formato_chileno(total_vulnerable),
+        "total_comunas": formato_chileno(total),
+        "porcentaje_vulnerables": formato_chileno_prom(indicador)}
 
 def obtener_valores_tabla(filtro, session):
-    total_censo2024 = session.query(func.sum(HabitabilidadIneficiencia.CENSO2024)).filter(filtro).scalar()
-    total_2000 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2000)).filter(filtro).scalar()
-    total_2000_2006 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2000_2006)).filter(filtro).scalar()
-    total_2007_2024 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2007_2024)).filter(filtro).scalar()
+    total_vulnerable = session.query(func.count()).select_from(AsequibilidadVulnerable).filter(
+        filtro, AsequibilidadVulnerable.VULN_ENERGETICA == 1
+    ).scalar() or 0
+    total_no_vulnerable = session.query(func.count()).select_from(AsequibilidadVulnerable).filter(
+        filtro, AsequibilidadVulnerable.VULN_ENERGETICA == 0
+    ).scalar() or 0
 
     return {
-        "total_censo2024": formato_chileno(total_censo2024),
-        "total_2000": formato_chileno(total_2000),
-        "total_2000_2006": formato_chileno(total_2000_2006),
-        "total_2007_2024": formato_chileno(total_2007_2024),
-    }
+        "total_comunas_vulnerables": formato_chileno(total_vulnerable),
+        "total_comunas_no_vulnerables": formato_chileno(total_no_vulnerable)}
 
-def obtener_indicador_ineficiencia(cut, session):
+def obtener_indicador_vulnerable(cut, session):
     resultados = {}
     filtro = None
 
     if cut is None:
         filtro = True  # Sin filtro, obtiene todos los datos
-        regiones = session.query(HabitabilidadIneficiencia.CUT_REG).distinct().all()
+        regiones = session.query(AsequibilidadVulnerable.CUT_REG).distinct().all()
         desglose_regional = {}
         porcentajes_por_region = {}
 
         for reg in regiones:
             cut_reg = reg[0]
-            filtro_reg = HabitabilidadIneficiencia.CUT_REG == cut_reg
+            filtro_reg = AsequibilidadVulnerable.CUT_REG == cut_reg
             ind = calcular_indicador(filtro_reg, session)
-            cod = str(cut_reg).zfill(2)
+            cod = str(cut_reg)
             desglose_regional[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_eficiente"))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_vulnerables"))
         resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     elif len(str(cut)) <= 2:
-        filtro = HabitabilidadIneficiencia.CUT_REG == int(cut)
-        comunas = session.query(HabitabilidadIneficiencia.CUT_COM).filter(HabitabilidadIneficiencia.CUT_REG == int(cut)).distinct().all()
+        filtro = AsequibilidadVulnerable.CUT_REG == int(cut)
+        comunas = session.query(AsequibilidadVulnerable.CUT_COM).filter(filtro).distinct().all()
         desglose_comunal = {}
         porcentajes_por_comuna = {}
 
         for com in comunas:
             cut_com = com[0]
-            filtro_com = HabitabilidadIneficiencia.CUT_COM == cut_com
+            filtro_com = AsequibilidadVulnerable.CUT_COM == cut_com
             ind = calcular_indicador(filtro_com, session)
+            cod = str(cut_com)
+            desglose_comunal[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_eficiente"))
+            porcentajes_por_comuna[cod] = formato_chileno_prom(ind.get("porcentaje_vulnerables"))
+
         resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
-        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     elif len(str(cut)) > 2:
-        filtro = HabitabilidadIneficiencia.CUT_COM == int(cut)
-
+        filtro = AsequibilidadVulnerable.CUT_COM == int(cut)
         resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     return resultados
-
-
-    

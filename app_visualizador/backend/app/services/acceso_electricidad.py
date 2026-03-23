@@ -1,25 +1,18 @@
 # services/acceso_electricidad.py
-from models import (AccesoCenso, Casen, CasenComunaProvincia)
+from models import (AccesoCenso, Casen, CasenComunaProvincia, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            construir_leyenda_mapa, calcular_colores_mapa)
 from sqlalchemy import func, case, and_
 
-# A la fecha: 30-09-2025
-# Información de contexto (modificar tras cambios, mantener indicadores actualizados):
+# A la fecha: 07-01-2026
+# Formula del indicador:
 
 # ┌────────────────────────────────────────────────────────────────────────────────────────────┐
-# │   Se mantiene la lógica báse de los indicadores, se modifican los retornos principales     │
-# │   para responder a los despliegues del front.                                              │                            
-# │                                                                                            │                                    
-# │   Acorde a la ficha de indicadores del Visualizador de PE, el indicador es:                │
 # │                                                                                            │
 # │                                             N° de viviendas sin Electricidad               │       
 # │    Hogares sin acceso a electricidad =      ───────────────────────────────   x 100        │
 # │                                                 N° de viviendas totales                    │           
 # │                                                                                            │ 
-# │   Se incluye la lógica de CASEN y CENSO, sin considerar el factor de expansión comunal     │
-# │   para la primera, solamente el indicador de forma bruta, y se incluye despliegue de datos │
-# │   proporcionales para el mapa de calor.                                                    │
 # └────────────────────────────────────────────────────────────────────────────────────────────┘
 
 # ┌───────────────────────────────────────────────────┐
@@ -58,13 +51,13 @@ def calcular_indicadores_casen(filtro, session):
     total_sinacceso = session.query(
         func.sum(
             case(
-                (Casen.V24 == 8 , 1), 
+                (Casen.V24 == 8 , Casen.EXPR), 
                 else_=0)
         )
     ).filter(filtro_completo).scalar() or 0
 
     total_viviendas = session.query(
-        func.count(Casen.id)
+        func.sum(Casen.EXPR)
     ).filter(filtro_completo).scalar() or 0
 
     indicador = total_sinacceso / total_viviendas * 100 if total_viviendas else None
@@ -77,7 +70,7 @@ def calcular_indicadores_casen(filtro, session):
 
 def acceso_tipo_electricidad_casen(filtro, session):
     def _sum(col, valor):
-        q = session.query(func.sum(case((col == valor, 1), else_=0)))
+        q = session.query(func.sum(case((col == valor, Casen.EXPR), else_=0)))
         if filtro is not True and filtro is not None:
             q = q.filter(filtro)
         return q.scalar() or 0
@@ -109,6 +102,12 @@ def acceso_tipo_electricidad_casen(filtro, session):
 def obtener_acceso_electricidad_casen(cut, session):
     resultados = {}
 
+    if resultados.get("fuente") is None:
+        try:
+            resultados["fuente"] = ("CASEN" + " " +str(session.query(ConfigFuentes).first().anio_casen))
+        except Exception:
+            resultados["fuente"] = "CASEN"
+
     if cut is None:
         filtro_nacional = True  
         
@@ -124,7 +123,7 @@ def obtener_acceso_electricidad_casen(cut, session):
             cod = str(cut_reg).zfill(2)
             desglose_regional[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_sin_acceso"))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje"))
 
         resultados["tipo_energetico"] = acceso_tipo_electricidad_casen(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_nacional, session)
@@ -152,7 +151,7 @@ def obtener_acceso_electricidad_casen(cut, session):
         for cut_com, folios_comuna in folios_por_comuna.items():
             filtro_com = Casen.FOLIO.in_(folios_comuna)
             indicadores = calcular_indicadores_casen(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje_sin_acceso"))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje"))
 
         resultados["tipo_energetico"] = acceso_tipo_electricidad_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)
@@ -166,7 +165,6 @@ def obtener_acceso_electricidad_casen(cut, session):
         ).all()
         folios_lista = [f[0] for f in folios]
         filtro_com = Casen.FOLIO.in_(folios_lista)
-        # 👇 key corregida
         resultados["tipo"] = acceso_tipo_electricidad_casen(filtro_com, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_com, session)
 
@@ -226,6 +224,12 @@ def acceso_tipo_energetico_censo(filtro, session):
 def obtener_acceso_electricidad_censo(cut, session):
     resultados = {}
 
+    if resultados.get("fuente") is None:
+        try:
+            resultados["fuente"] = ("CENSO" + " " + str(session.query(ConfigFuentes).first().anio_censo))
+        except Exception:
+            resultados["fuente"] = "CENSO"
+
     if cut is None:
         filtro_nacional = True
 
@@ -256,7 +260,6 @@ def obtener_acceso_electricidad_censo(cut, session):
             cut_com = com[0]
             filtro_com = AccesoCenso.CUT_COM == cut_com
             ind = calcular_indicadores_censo(filtro_com, session)
-            # 👇 sin zfill para que haga match con MapView
             porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_sin_acceso"))
 
         resultados["tipo"] = acceso_tipo_energetico_censo(filtro_regional, session)
@@ -266,7 +269,6 @@ def obtener_acceso_electricidad_censo(cut, session):
         
     else:
         filtro_comunal = AccesoCenso.CUT_COM == int(cut)
-        # 👇 variable correcta
         resultados["tipo"] = acceso_tipo_energetico_censo(filtro_comunal, session)
         resultados["desglose"] = calcular_indicadores_censo(filtro_comunal, session)
 

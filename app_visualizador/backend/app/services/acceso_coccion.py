@@ -1,30 +1,19 @@
 # services/acceso_coccion.py
-from models import (Casen,CasenComunaProvincia)
+from models import (Casen,CasenComunaProvincia,AccesoCenso, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            construir_leyenda_mapa, calcular_colores_mapa)
 from sqlalchemy import func, case, and_
 
-# A la fecha: 30-09-2025
-# Información de contexto (modificar tras cambios, mantener indicadores actualizados):
+# A la fecha: 06-01-2026
+# Fórmula del indicador:
 
 # ┌────────────────────────────────────────────────────────────────────────────────────────────┐
-# │   Se mantiene la lógica báse de los indicadores, se modifican los retornos principales     │
-# │   para responder a los despliegues del front.                                              │                                     │
-# │                                                                                            │                                    
-# │   Acorde a la ficha de indicadores del Visualizador de PE, el indicador es:                │
 # │                                                                                            │
 # │                                             N° de viviendas sin Acceso a                   │
 # │                                                  Sistemas de cocción                       │       
 # │    Hogares sin acceso a sistemas de =      ───────────────────────────────   x 100         │
 # │                cocción                          N° de viviendas totales                    │           
 # │                                                                                            │ 
-# │   Por ahora, el indicador solo considera los valores de Casen, y hace el cálculo del in-   │
-# │   dicador de forma bruta, sin considerar los factores de expansión comunal.                │
-# │                                                                                            │
-# │   Se debe agregar la lógica para interactuar con el Censo, definiendo otra función aparte  │
-# │   que permita interactuar con la otra base (aun no está definido en la ficha).             │
-# │                                                                                            │
-# │   Se agregaron funciones requeridas para desplegar el mapa de calor.                       │
 # └────────────────────────────────────────────────────────────────────────────────────────────┘
 
 # ┌───────────────────────────────────────────────────┐
@@ -69,7 +58,7 @@ def calcular_indicadores_casen(filtro, session):
         # que serían todos los valores 8 en la columna V34B.
         func.sum(
             case(
-                (Casen.V34A == 8, 1),
+                (Casen.V34A == 8, Casen.EXPR),
                 else_=0
             )    
         )
@@ -78,9 +67,9 @@ def calcular_indicadores_casen(filtro, session):
     # es un cálculo nacional, regional o comunal.
     ).filter(filtro_completo).scalar() or 0
 
-    # Se calcula el total de viviendas, filtrando por medio la columna "id".
+    # Se calcula el total de viviendas ponderadas por el factor de expansión.
     total_viviendas = session.query(
-        func.count(Casen.id)
+        func.sum(Casen.EXPR)
     ).filter(filtro_completo).scalar() or 0
 
     # Se calcula el indicador, que es el porcentaje de viviendas sin acceso a sistemas de
@@ -99,10 +88,10 @@ def calcular_indicadores_casen(filtro, session):
 # por el valor asociado a cada respuesta.
 def acceso_tipo_coccion_casen(filtro, session):
      def _sum(col, valor):
-          q = session.query(func.sum(case((col == valor, 1), else_=0)))
-          if filtro is not True and filtro is not None:
-               q = q.filter(filtro)
-          return q.scalar() or 0
+        q = session.query(func.sum(case((col == valor, Casen.EXPR), else_=0)))
+        if filtro is not True and filtro is not None:
+            q = q.filter(filtro)
+        return q.scalar() or 0
      
      gas_licuado = _sum(Casen.V34A, 1)
      gas_red = _sum(Casen.V34A, 2)
@@ -132,6 +121,12 @@ def acceso_tipo_coccion_casen(filtro, session):
 # regional o comunal; y, en el caso que sea None, retorna los datos a nivel nacional.
 def obtener_acceso_coccion_casen(cut, session):
     resultados = {}
+
+    if resultados.get("fuente") is None:
+        try:
+            resultados["fuente"] = ("CASEN" + " " + str(session.query(ConfigFuentes).first().anio_casen))
+        except Exception:
+            resultados["fuente"] = "CASEN"
     
     if cut is None:
         # En el caso del "filtro_nacional", retorna todos los datos.
@@ -210,12 +205,118 @@ def obtener_acceso_coccion_casen(cut, session):
 
     else:
         # Filtro comunal.
-            folios = session.query(CasenComunaProvincia.FOLIO).filter(
-                CasenComunaProvincia.CUT_COM == int(cut)
-            ).all()
-            folios_lista = [f[0] for f in folios]
-            filtro_comunal = Casen.FOLIO.in_(folios_lista)
-            resultados["tipo"] = acceso_tipo_coccion_casen(filtro_comunal, session)
-            resultados["desglose"] = calcular_indicadores_casen(filtro_comunal, session)
+        folios = session.query(CasenComunaProvincia.FOLIO).filter(
+            CasenComunaProvincia.CUT_COM == int(cut)
+        ).all()
+        folios_lista = [f[0] for f in folios]
+        filtro_comunal = Casen.FOLIO.in_(folios_lista)
+        resultados["tipo"] = acceso_tipo_coccion_casen(filtro_comunal, session)
+        resultados["desglose"] = calcular_indicadores_casen(filtro_comunal, session)
+
+    return resultados
+
+# ┌───────────────────────────────────────────┐
+# │  4) Cálculo para base de datos - CENSO    │ 
+# └───────────────────────────────────────────┘
+
+def calcular_indicadores_censo(filtro, session):
+    total_sinacceso = session.query(
+        func.sum(AccesoCenso.CO_NO_TIENE + AccesoCenso.CO_NO_DECLARA)
+    ).filter(filtro).scalar() or 0
+
+    total_viviendas = session.query(
+        func.sum(AccesoCenso.TOTAL)
+    ).filter(filtro).scalar() or 0
+
+    indicador = total_sinacceso / total_viviendas * 100 if total_viviendas else None
+
+    return {
+        "porcentaje_sin_acceso": formato_chileno_prom(indicador),
+        "total_indicador": formato_chileno(total_sinacceso),
+        "total_viviendas": formato_chileno(total_viviendas)
+    }
+
+def acceso_tipo_coccion_censo(filtro, session):
+    # para evitar .filter(True), opcionalmente puedes chequear:
+    def _sum(col):
+        q = session.query(func.sum(col))
+        if filtro is not True and filtro is not None:
+            q = q.filter(filtro)
+        return q.scalar() or 0
+
+    gas = _sum(AccesoCenso.CO_GAS)
+    parafina     = _sum(AccesoCenso.CO_PARAFINA)
+    lenia         = _sum(AccesoCenso.CO_LENIA)
+    pellet        = _sum(AccesoCenso.CO_PELLET)
+    carbon          = _sum(AccesoCenso.CO_CARBON)
+    solar      = _sum(AccesoCenso.CO_SOLAR)
+    no_tiene    = _sum(AccesoCenso.CO_NO_TIENE)
+    no_declara    = _sum(AccesoCenso.CO_NO_DECLARA)
+
+    return {
+        "gas": formato_chileno(gas),
+        "parafina":     formato_chileno(parafina),
+        "lenia":         formato_chileno(lenia),
+        "pellet":        formato_chileno(pellet),
+        "carbon":          formato_chileno(carbon),
+        "solar":      formato_chileno(solar),
+        "no_tiene":      formato_chileno(no_tiene),
+        "no_declara":    formato_chileno(no_declara),
+    }
+
+# ┌───────────────────────────────┐
+# │  5) Filtro por CUT - CENSO    │ 
+# └───────────────────────────────┘
+
+def obtener_acceso_coccion_censo(cut, session):
+    resultados = {}
+
+    if resultados.get("fuente") is None:
+        try:
+            resultados["fuente"] = ("CENSO" + " " + str(session.query(ConfigFuentes).first().anio_censo))
+        except Exception:
+            resultados["fuente"] = "CENSO"
+            
+    if cut is None:
+        filtro_nacional = True
+
+        regiones = session.query(AccesoCenso.CUT_REG).distinct().all()
+        porcentajes_por_region = {}
+
+        for reg in regiones:
+            cut_reg = reg[0]
+            filtro_reg = AccesoCenso.CUT_REG == cut_reg
+            ind = calcular_indicadores_censo(filtro_reg, session)
+            cod = str(cut_reg).zfill(2)  # nacional sí usa "01".."16"
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_sin_acceso"))
+
+        resultados["desglose"] = calcular_indicadores_censo(filtro_nacional, session)
+        resultados["tipo"] = acceso_tipo_coccion_censo(filtro_nacional, session)
+        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
+        resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
+
+    elif len(str(cut)) <= 2:
+        filtro_regional = AccesoCenso.CUT_REG == int(cut)
+
+        comunas = session.query(AccesoCenso.CUT_COM).filter(
+            AccesoCenso.CUT_REG == int(cut)
+        ).distinct().all()
+
+        porcentajes_por_comuna = {}
+        for com in comunas:
+            cut_com = com[0]
+            filtro_com = AccesoCenso.CUT_COM == cut_com
+            ind = calcular_indicadores_censo(filtro_com, session)
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_sin_acceso"))
+
+        resultados["tipo"] = acceso_tipo_coccion_censo(filtro_regional, session)
+        resultados["desglose"] = calcular_indicadores_censo(filtro_regional, session)
+        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
+        resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
+        
+    else:
+        filtro_comunal = AccesoCenso.CUT_COM == int(cut)
+        resultados["tipo"] = acceso_tipo_coccion_censo(filtro_comunal, session)
+        resultados["desglose"] = calcular_indicadores_censo(filtro_comunal, session)
 
     return resultados

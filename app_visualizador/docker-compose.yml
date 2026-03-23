@@ -24,20 +24,25 @@ services:
       dockerfile: Dockerfile.dev
     env_file:
       - ./backend/.env
+    ports:
+      - "4322:4322"
     depends_on:
       db:
-        condition: service_healthy       
+        condition: service_healthy
     restart: unless-stopped
 
   frontend:
     build:
       context: ./frontend
       dockerfile: Dockerfile.dev
+    env_file:
+      - ./frontend/.env
     environment:
-      - NODE_ENV=development   # o production si quieres
+      - NODE_ENV=development # o production si quieres
+      - VITE_BACKEND_ORIGIN= http://backend:4322
     ports:
-      - '5173:5173'
-    command: 'npm run dev -- --host'
+      - "5173:5173"
+    command: "npm run dev -- --host"
     restart: unless-stopped
 
 volumes:

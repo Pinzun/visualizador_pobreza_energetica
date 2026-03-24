@@ -126,7 +126,7 @@ def obtener_indicador_zonas_frias(cut, session):
             desglose_regional[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
             porcentajes_por_region[cod] = ind.get("porcentaje_sin_calefaccion")
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
@@ -151,7 +151,7 @@ def obtener_indicador_zonas_frias(cut, session):
             # Toma el porcentaje (string) y lo parsea a float %
             porcentajes_por_comuna[str(cut_com)] = ind.get("porcentaje_sin_calefaccion")
         
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
@@ -160,7 +160,7 @@ def obtener_indicador_zonas_frias(cut, session):
         # Filtro para una comuna específica
         filtro = AccesoZonasT.CUT_COM == int(cut)
         
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     return resultados

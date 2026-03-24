@@ -105,7 +105,7 @@ def obtener_indicador_ineficiencia(cut, session):
             ind = calcular_indicador(filtro_com, session)
             # Toma el porcentaje (string) y lo parsea a float %
             porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_eficiente"))
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
@@ -113,7 +113,7 @@ def obtener_indicador_ineficiencia(cut, session):
     elif len(str(cut)) > 2:
         filtro = HabitabilidadIneficiencia.CUT_COM == int(cut)
 
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     return resultados

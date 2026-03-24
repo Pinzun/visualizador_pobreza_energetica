@@ -73,7 +73,7 @@ def obtener_indicador_calor(cut, session):
             desglose_regional[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
             porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_eficiente"))
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
@@ -81,7 +81,7 @@ def obtener_indicador_calor(cut, session):
     elif len(str(cut)) <= 2:
         filtro = HabitabilidadCalor.CUT_REG == int(cut)
         porcentaje_indicador = calcular_indicador(filtro, session)
-        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
 

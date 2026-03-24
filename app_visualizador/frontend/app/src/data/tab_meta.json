@@ -14,7 +14,8 @@
       {
         "value": "acceso_agua_caliente",
         "label": "Hogares sin sistema de agua caliente"
-      }
+      },
+      { "value": "acceso_zonas_t", "label": "Acceso por zonas térmicas" }
     ]
   },
   "calidad": {
@@ -34,8 +35,36 @@
     "label": "Asequibilidad",
     "indicators": [
       {
-        "value": "habitabilidad_irrecuperable",
-        "label": "Viviendas en condición irrecuperable"
+        "value": "asequibilidad_med_nac_proporcion",
+        "label": "Proporción del gasto energético respecto a la mediana nacional"
+      },
+      {
+        "value": "asequibilidad_med_nac_menor",
+        "label": "Hogares con gasto menor a la mediana nacional"
+      },
+      {
+        "value": "asequibilidad_med_nac_doble",
+        "label": "Hogares con gasto mayor al doble de la mediana nacional"
+      },
+      {
+        "value": "asequibilidad_gasto_10p",
+        "label": "Hogares con gasto energético sobre el 10%"
+      },
+      {
+        "value": "asequibilidad_g_insuficiente",
+        "label": "Hogares con gasto energético insuficiente"
+      },
+      {
+        "value": "asequibilidad_vuln",
+        "label": "Hogares vulnerables energéticamente"
+      },
+      {
+        "value": "asequibilidad_g_excesivo",
+        "label": "Hogares con gasto energético excesivo"
+      },
+      {
+        "value": "asequibilidad_gasto_energ_p",
+        "label": "Gasto energético per cápita"
       }
     ]
   },
@@ -44,12 +73,20 @@
     "label": "Habitabilidad",
     "indicators": [
       {
-        "value": "habitabilidad_ineficiencia_termica",
-        "label": "Viviendas ineficientes térmicamente"
+        "value": "habitabilidad_irrecuperable",
+        "label": "Viviendas en condición irrecuperable"
       },
       {
-        "value": "bajos_ingresos_zonas_frias",
-        "label": "Hogares con bajos ingresos en zonas frías"
+        "value": "habitabilidad_frio",
+        "label": "Viviendas con déficit térmico en frío"
+      },
+      {
+        "value": "habitabilidad_calor",
+        "label": "Viviendas con déficit térmico en calor"
+      },
+      {
+        "value": "habitabilidad_conservacion",
+        "label": "Viviendas con problemas de conservación"
       }
     ]
   }

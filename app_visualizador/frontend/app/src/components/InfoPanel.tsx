@@ -45,19 +45,19 @@ function InfoPanel({
         key,
         label,
       })),
-    []
+    [],
   );
 
   const [currentTab, setCurrentTab] = useState<string>(tabs[0]?.key ?? "");
 
   // 2) Opciones de indicador para la pestaña actual
   const indicatorOptions: Indicator[] = useMemo(() => {
-    return currentTab ? TAB_META[currentTab]?.indicators ?? [] : [];
+    return currentTab ? (TAB_META[currentTab]?.indicators ?? []) : [];
   }, [currentTab]);
 
   // 3) Indicador seleccionado (default = primero de la pestaña)
   const [indicator, setIndicator] = useState<string | null>(
-    indicatorOptions[0]?.value ?? null
+    indicatorOptions[0]?.value ?? null,
   );
 
   // Reset del indicador cuando cambian las opciones (pestaña distinta o TAB_META cambia)
@@ -85,7 +85,6 @@ function InfoPanel({
 
   // 6) Derivar campos del payload (tolerante a variaciones entre rutas)
   const desglose = payload?.desglose ?? (payload as any)?.desglose ?? undefined;
-
   const tipo_energetico = payload?.tipo ?? undefined;
 
   // 7) Sincronizar datos de mapa con el padre (incluye reset si no hay datos)
@@ -100,15 +99,58 @@ function InfoPanel({
   // 8) Títulos según indicador (con fallback)
   const TITULOS = {
     pie: {
+      // Acceso
       acceso_electricidad: "Viviendas con/sin acceso a electricidad",
       acceso_coccion: "Hogares con/sin sistema de cocción",
       acceso_agua_caliente: "Hogares con/sin sistema de agua caliente",
+      acceso_zonas_t: "Hogares sin acceso por zona térmica",
+      // Calidad
+      calidad_coccion: "Hogares con cocción deficiente",
+      calidad_calefaccion: "Hogares con calefacción deficiente",
+      calidad_saidi: "Hogares afectados por interrupciones eléctricas",
+      // Asequibilidad
+      asequibilidad_med_nac_proporcion:
+        "Proporción del gasto respecto a la mediana nacional",
+      asequibilidad_med_nac_menor:
+        "Hogares con gasto menor a la mediana nacional",
+      asequibilidad_med_nac_doble:
+        "Hogares con gasto mayor al doble de la mediana",
+      asequibilidad_gasto_10p: "Hogares con gasto energético sobre el 10%",
+      asequibilidad_g_insuficiente: "Hogares con gasto energético insuficiente",
+      asequibilidad_vuln: "Hogares vulnerables energéticamente",
+      asequibilidad_g_excesivo: "Hogares con gasto energético excesivo",
+      asequibilidad_gasto_energ_p: "Gasto energético per cápita",
+      // Habitabilidad
+      habitabilidad_irrecuperable: "Viviendas en condición irrecuperable",
+      habitabilidad_frio: "Viviendas con déficit térmico en frío",
+      habitabilidad_calor: "Viviendas con déficit térmico en calor",
+      habitabilidad_conservacion: "Viviendas con problemas de conservación",
       default: "Desglose principal",
     },
     barras: {
+      // Acceso
       acceso_electricidad: "Tecnología de abastecimiento de energía eléctrica",
       acceso_coccion: "Tipo de combustible/tecnología de cocción",
       acceso_agua_caliente: "Tecnología de agua caliente sanitaria",
+      acceso_zonas_t: "Distribución por zona térmica",
+      // Calidad
+      calidad_coccion: "Combustible usado para cocción",
+      calidad_calefaccion: "Combustible usado para calefacción",
+      calidad_saidi: "Duración promedio de interrupciones por región",
+      // Asequibilidad
+      asequibilidad_med_nac_proporcion: "Distribución del gasto por región",
+      asequibilidad_med_nac_menor: "Distribución por región",
+      asequibilidad_med_nac_doble: "Distribución por región",
+      asequibilidad_gasto_10p: "Distribución por región",
+      asequibilidad_g_insuficiente: "Distribución por región",
+      asequibilidad_vuln: "Distribución por región",
+      asequibilidad_g_excesivo: "Distribución por región",
+      asequibilidad_gasto_energ_p: "Gasto energético per cápita por región",
+      // Habitabilidad
+      habitabilidad_irrecuperable: "Distribución por región",
+      habitabilidad_frio: "Distribución por región",
+      habitabilidad_calor: "Distribución por región",
+      habitabilidad_conservacion: "Distribución por región",
       default: "Distribución por categoría",
     },
   } as const;

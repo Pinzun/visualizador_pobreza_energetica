@@ -1,7 +1,7 @@
 // src/api/indicadores.ts
 export type Desglose = {
-  porcentaje_sin_acceso: string;
-  total_sin_acceso: string;
+  porcentaje_sin_acceso: number; // llegó como número en el payload real
+  total_indicador: string; // ← nombre real del backend
   total_viviendas: string;
 };
 
@@ -48,18 +48,30 @@ export type IndicadorPayload = {
 
 // Mapa indicador → endpoint (ajusta/añade según tus rutas reales)
 export const INDICATOR_ENDPOINTS: Record<string, string> = {
-  // pestaña/indicador “acceso a electricidad”
+  // Acceso
   acceso_electricidad: "/api/public/acceso_electricidad",
-  acceso_agua_caliente: "/api/public/acceso_agua_caliente",
   acceso_coccion: "/api/public/acceso_coccion",
-  calidad_calefaccion: "/api/public/calidad_calefaccion",
+  acceso_agua_caliente: "/api/public/acceso_agua_caliente",
+  acceso_zonas_t: "/api/public/acceso_zonas_t",
+  // Calidad
   calidad_coccion: "/api/public/calidad_coccion",
+  calidad_calefaccion: "/api/public/calidad_calefaccion",
   calidad_saidi: "/api/public/calidad_saidi",
-  habitabilidad_ineficiencia: "/api/public/habitabilidad_ineficiencia",
+  // Asequibilidad
+  asequibilidad_med_nac_proporcion:
+    "/api/public/asequibilidad_med_nac_proporcion",
+  asequibilidad_med_nac_menor: "/api/public/asequibilidad_med_nac_menor",
+  asequibilidad_med_nac_doble: "/api/public/asequibilidad_med_nac_doble",
+  asequibilidad_gasto_10p: "/api/public/asequibilidad_gasto_10p",
+  asequibilidad_g_insuficiente: "/api/public/asequibilidad_g_insuficiente",
+  asequibilidad_vuln: "/api/public/asequibilidad_vuln",
+  asequibilidad_g_excesivo: "/api/public/asequibilidad_g_excesivo",
+  asequibilidad_gasto_energ_p: "/api/public/asequibilidad_gasto_energ_p",
+  // Habitabilidad
   habitabilidad_irrecuperable: "/api/public/habitabilidad_irrecuperable",
-  // ejemplo de otros indicadores:
-  // ineficiencia_termica: "/api/public/ineficiencia_termica",
-  // acceso_coccion: "/api/public/acceso_coccion",
+  habitabilidad_frio: "/api/public/habitabilidad_frio",
+  habitabilidad_calor: "/api/public/habitabilidad_calor",
+  habitabilidad_conservacion: "/api/public/habitabilidad_conservacion",
 };
 
 // Si no llega indicador, usaremos este como default:
@@ -67,7 +79,7 @@ const DEFAULT_INDICATOR = "acceso_electricidad";
 
 export async function fetchIndicador(
   indicator: string | null | undefined,
-  cut?: string
+  cut?: string,
 ): Promise<IndicadorPayload> {
   const key = indicator ?? DEFAULT_INDICATOR;
   const base =

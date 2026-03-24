@@ -1,142 +1,122 @@
 # services/habtiabilidad_ineficiencia.py
-from models import HabitabilidadCenso, HabitabilidadIneficiencia
-from services.dar_formato import (formato_chileno, formato_chileno_prom)
-from sqlalchemy import func
+from models import HabitabilidadIneficiencia
+from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
+                                           calcular_colores_mapa, construir_leyenda_mapa)
+from sqlalchemy import func, case, and_
 
-# EN STAND BY - VERSIÓN SIN REVISAR DEL SERVICIO
+# Cambios registrados a la fecha: 18-12-2025
 
-# Dado que la base de datos de permisos es GIGANTE tanto en datos como en peso, se utilizó SQLAlchemy
-# para poder hacer los cálculos. El servicio se encarga de procesar el dato en su totalidad, sin dar
-# responsabilidades adicionales a la ruta (como aplicar formato o calcular cualquier dato) que no sea
-# desplegar la información que se genere acá.
+# ┌───────────────────────────────────────────────────┐
+# │ 1) Configuración básica para despliegue de datos  │ 
+# └───────────────────────────────────────────────────┘
 
-# Considerando que esto establece mayor modularidad, es decir, define de forma concreta todas las fun-
-# ciones en un solo script, y deja el rol de desplegar información en la API a la ruta, podría ser una
-# buena idea migrar otros indicadores a SQLAlchemy; o, al menos, adoptar la lógica previamente comentada.
+# Datos modificables para la configuración base acorde a los despliegues de cada indicador.
 
-#       ┌─────────────────────────────────────────────────────────────────┐
-#       │  1) Caso sin CUT - CENSO = Indica desglose nacional y regional  │ 
-#       └─────────────────────────────────────────────────────────────────┘
+# Título del indicador.
+titulo = "% de viviendas por normativa térmica vigente"
 
-def obtener_indicador_ineficiencia(cut, session):
-    # Definimos los rangos de años
-    rangos = {
-        "rt1_rt2": list(range(2000, 2008)),   # 2000 a 2007
-        "rt2_pda": list(range(2007, 2016)),   # 2007 a 2015
-        "pda_rt3": list(range(2015, 2026))    # 2015 a 2025
+# Datos de corte del mapa.
+CORTES = [
+    (0.00, 0.25),
+    (0.25, 0.50),
+    (0.50, 0.75),
+    (0.75, 1.00),
+    (1.00, 100.00),  # abierto
+]
+
+# Paleta de colores para el mapa.
+PALETA = [
+    "#f7fbff",  # 0–0,25%
+    "#c6dbef",  # 0,25–0,5%
+    "#6baed6",  # 0,5–0,75%
+    "#2171b5",  # 0,75–1%
+    "#08306b",  # ≥1%
+]
+
+# ┌─────────────────────────────────┐
+# │ 2) Cálculo para base de datos   │ 
+# └─────────────────────────────────┘
+
+def calcular_indicador(filtro, session):
+    total_censo2024 = session.query(func.sum(HabitabilidadIneficiencia.CENSO2024)).filter(filtro).scalar()
+    total_2000_2006 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2000_2006)).filter(filtro).scalar()
+    total_2007_2024 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2007_2024)).filter(filtro).scalar()
+
+    # Checkeo de None para evitar errores en cálculos
+    total_censo2024 = total_censo2024 or 0
+    total_2000_2006 = total_2000_2006 or 0
+    total_2007_2024 = total_2007_2024 or 0
+
+    if total_censo2024 == 0:
+        indicador = 0
+    else:
+        indicador = ((total_2000_2006 + total_2007_2024)/total_censo2024)
+
+    return {
+        "total_viviendas": formato_chileno(total_censo2024),
+        "total_viviendas_reglamento": formato_chileno(total_2000_2006 + total_2007_2024),
+        "porcentaje_eficiente": formato_chileno_prom(indicador)}
+
+def obtener_valores_tabla(filtro, session):
+    total_censo2024 = session.query(func.sum(HabitabilidadIneficiencia.CENSO2024)).filter(filtro).scalar()
+    total_2000 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2000)).filter(filtro).scalar()
+    total_2000_2006 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2000_2006)).filter(filtro).scalar()
+    total_2007_2024 = session.query(func.sum(HabitabilidadIneficiencia.TOTAL_2007_2024)).filter(filtro).scalar()
+
+    return {
+        "total_censo2024": formato_chileno(total_censo2024),
+        "total_2000": formato_chileno(total_2000),
+        "total_2000_2006": formato_chileno(total_2000_2006),
+        "total_2007_2024": formato_chileno(total_2007_2024),
     }
 
-    # Filtros según si es regional o comunal
-    if cut:
-        if len(cut) <= 2:
-            # Hace filtro en base a cut_reg
-            filtro_viv = HabitabilidadCenso.CUT_REG == int(cut)
-            filtro_perm = HabitabilidadIneficiencia.CUT_REG == int(cut)
-        else:
-            # Hace filtro en base a cut_com
-            filtro_viv = HabitabilidadCenso.CUT_COM == int(cut)
-            filtro_perm = HabitabilidadIneficiencia.CUT_COM == int(cut)
+def obtener_indicador_ineficiencia(cut, session):
+    resultados = {}
+    filtro = None
 
-        # Consulta todas las viviendas y permisos disponibles
-        viviendas = session.query(
-        # Hace query por año y viviendas
-            HabitabilidadCenso.ANIO,
-            func.sum(HabitabilidadCenso.TOTAL).label('total_viviendas')
-            ).filter(filtro_viv).group_by(HabitabilidadCenso.ANIO).all()
+    if cut is None:
+        filtro = True  # Sin filtro, obtiene todos los datos
+        regiones = session.query(HabitabilidadIneficiencia.CUT_REG).distinct().all()
+        desglose_regional = {}
+        porcentajes_por_region = {}
 
-        permisos = session.query(
-        # Hace query por año y permisos
-        HabitabilidadIneficiencia.ANIO,
-        func.count(HabitabilidadIneficiencia.id).label('total_permisos')
-        ).filter(filtro_perm).group_by(HabitabilidadIneficiencia.ANIO).all()
+        for reg in regiones:
+            cut_reg = reg[0]
+            filtro_reg = HabitabilidadIneficiencia.CUT_REG == cut_reg
+            ind = calcular_indicador(filtro_reg, session)
+            cod = str(cut_reg).zfill(2)
+            desglose_regional[cod] = ind
+            # Toma el porcentaje (string) y lo parsea a float %
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_eficiente"))
+        resultados["tipo_permiso"] = obtener_valores_tabla(filtro, session)
+        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
+        resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
+        resultados["desglose"] = calcular_indicador(filtro, session)
 
-        # Convertimos a diccionarios para facilitar el acceso
-        viviendas_dict = {r[0]: r[1] for r in viviendas}
-        permisos_dict = {r[0]: r[1] for r in permisos}
+    elif len(str(cut)) <= 2:
+        filtro = HabitabilidadIneficiencia.CUT_REG == int(cut)
+        comunas = session.query(HabitabilidadIneficiencia.CUT_COM).filter(HabitabilidadIneficiencia.CUT_REG == int(cut)).distinct().all()
+        desglose_comunal = {}
+        porcentajes_por_comuna = {}
 
-        resultado_por_rango = {}
+        for com in comunas:
+            cut_com = com[0]
+            filtro_com = HabitabilidadIneficiencia.CUT_COM == cut_com
+            ind = calcular_indicador(filtro_com, session)
+            # Toma el porcentaje (string) y lo parsea a float %
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_eficiente"))
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
+        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
+        resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
+        resultados["desglose"] = calcular_indicador(filtro, session)
 
-        for nombre_rango, años in rangos.items():
-            # Hace la sumatoria de cada variable en base a los rangos de años previamente definidos.
-            total_permisos = sum(permisos_dict.get(a, 0) for a in años)
-            viviendas_en_rango = [viviendas_dict.get(a, 0) for a in años if viviendas_dict.get(a, 0) > 0]
-            # Calcula el promedio de viviendas en base a las sumatorias previas.
-            promedio_viviendas = sum(viviendas_en_rango) / len(viviendas_en_rango) if viviendas_en_rango else 0
+    elif len(str(cut)) > 2:
+        filtro = HabitabilidadIneficiencia.CUT_COM == int(cut)
 
-            indicador = total_permisos / promedio_viviendas if promedio_viviendas else None
+        resultados["tipo"] = obtener_valores_tabla(filtro, session)
+        resultados["desglose"] = calcular_indicador(filtro, session)
 
-            resultado_por_rango[nombre_rango] = {
-                # Devuelve la información en formato json, considerando el rango de años definido, el total
-                # de permisos en el rango, el promedio calculado para viviendas, y el promedio de viviendas
-                # ineficientes térmicamente, acorde al indicador desplegado.
-                "total_permisos": formato_chileno(total_permisos),
-                "promedio_viviendas": formato_chileno(promedio_viviendas),
-                "promedio_ineficientes": formato_chileno_prom(indicador)
-            }
-        
-        return resultado_por_rango
+    return resultados
+
+
     
-    else:
-        
-# Lógica nacional + desglose regional
-        resultado_por_rango = {}
-
-        for nombre_rango, años in rangos.items():
-            # Viviendas por región
-            viviendas_por_region = session.query(
-                HabitabilidadCenso.CUT_REG,
-                HabitabilidadCenso.ANIO,
-                func.sum(HabitabilidadCenso.TOTAL).label('total_viviendas')
-            ).filter(HabitabilidadCenso.ANIO.in_(años)).group_by(HabitabilidadCenso.CUT_REG, HabitabilidadCenso.ANIO).all()
-
-            # Permisos por región
-            permisos_por_region = session.query(
-                HabitabilidadIneficiencia.CUT_REG,
-                HabitabilidadIneficiencia.ANIO,
-                func.count(HabitabilidadIneficiencia.id).label('total_permisos')
-            ).filter(HabitabilidadIneficiencia.ANIO.in_(años)).group_by(HabitabilidadIneficiencia.CUT_REG, HabitabilidadIneficiencia.ANIO).all()
-
-            # Agrupamos por región
-            viviendas_regionales = {}
-            for reg, anio, total in viviendas_por_region:
-                reg = str(reg).zfill(2)
-                viviendas_regionales.setdefault(reg, []).append(total)
-
-            permisos_regionales = {}
-            for reg, anio, total in permisos_por_region:
-                reg = str(reg).zfill(2)
-                permisos_regionales.setdefault(reg, 0)
-                permisos_regionales[reg] += total
-
-            desglose_regional = {}
-            total_viv_nacional = 0
-            total_perm_nacional = 0
-
-            for region in viviendas_regionales:
-                vivs = viviendas_regionales[region]
-                prom_vivs = sum(vivs) / len(vivs) if vivs else 0
-                perms = permisos_regionales.get(region, 0)
-                indicador = perms / prom_vivs if prom_vivs else None
-
-                desglose_regional[region] = {
-                    "promedio_ineficientes": formato_chileno_prom(indicador) if indicador is not None else "N/A",
-                    "total_permisos": formato_chileno(perms),
-                    "promedio_viviendas": formato_chileno(prom_vivs)
-                }
-
-                total_viv_nacional += prom_vivs
-                total_perm_nacional += perms
-
-            indicador_nacional = total_perm_nacional / total_viv_nacional if total_viv_nacional else None
-
-            resultado_por_rango[nombre_rango] = {
-                "rango_años": f"{años[0]}–{años[-1]}",
-                "desglose_nacional_habitabilidad_ineficiencia": {
-                    "promedio_ineficientes": formato_chileno_prom(indicador_nacional) if indicador_nacional is not None else "N/A",
-                    "total_permisos": formato_chileno(total_perm_nacional),
-                    "promedio_viviendas": formato_chileno(total_viv_nacional)
-                },
-                "desglose_regional_habitabilidad_ineficiencia": desglose_regional
-            }
-
-        return resultado_por_rango

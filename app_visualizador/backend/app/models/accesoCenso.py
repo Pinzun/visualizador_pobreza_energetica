@@ -23,7 +23,25 @@ class AccesoCenso (db.Model):
     ELEC_NO_TIENE= db.Column(db.Integer, nullable=False)		
     ELEC_NO_DECLARA= db.Column(db.Integer, nullable=False)
 
-    # ─────────── Identificación de variables de acceso a sistemas de cocción ───────────
-    		
+    #  ────── Identificación de variables de acceso a fuentes de calefacción ──────
+    CAL_GAS	= db.Column(db.Integer, nullable=False)		
+    CAL_PARAFINA = db.Column(db.Integer, nullable=False)		
+    CAL_LENIA = db.Column(db.Integer, nullable=False)		
+    CAL_PELLET = db.Column(db.Integer, nullable=False)		
+    CAL_CARBON = db.Column(db.Integer, nullable=False)			
+    CAL_ELECTR = db.Column(db.Integer, nullable=False)		
+    CAL_SOLAR = db.Column(db.Integer, nullable=False)
+    CAL_NO_TIENE = db.Column(db.Integer, nullable=False)
+    CAL_NO_DECLARA = db.Column(db.Integer, nullable=False)	
 
+    # ─────────── Identificación de variables de acceso a sistemas de cocción ───────────
+    CO_GAS	= db.Column(db.Integer, nullable=False)		
+    CO_PARAFINA = db.Column(db.Integer, nullable=False)		
+    CO_LENIA = db.Column(db.Integer, nullable=False)		
+    CO_PELLET = db.Column(db.Integer, nullable=False)		
+    CO_CARBON = db.Column(db.Integer, nullable=False)			
+    CO_ELECTR = db.Column(db.Integer, nullable=False)		
+    CO_SOLAR = db.Column(db.Integer, nullable=False)
+    CO_NO_TIENE = db.Column(db.Integer, nullable=False)
+    CO_NO_DECLARA = db.Column(db.Integer, nullable=False)	
 		

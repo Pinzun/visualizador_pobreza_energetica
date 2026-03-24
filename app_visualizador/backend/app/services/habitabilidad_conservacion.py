@@ -1,20 +1,10 @@
-# services/acceso_agua_caliente.py
-from models import (Casen,CasenComunaProvincia, ConfigFuentes)
+# services/habitabilidad_conservacion.py
+from models import (Casen, CasenComunaProvincia, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            calcular_colores_mapa, construir_leyenda_mapa)
-from sqlalchemy import func, case, and_
+from sqlalchemy import func, and_, case
 
-# A la fecha: 06-01-2026
-# Fórmula del indicador:
-
-# ┌────────────────────────────────────────────────────────────────────────────────────────────┐
-# │                                                                                            │
-# │                                             N° de viviendas sin Acceso a                   │
-# │                                                    agua caliente                           │       
-# │    Hogares sin acceso a sistemas de =      ───────────────────────────────   x 100         │
-# │             agua caliente                      N° de viviendas totales                     │           
-# │                                                                                            │ 
-# └────────────────────────────────────────────────────────────────────────────────────────────┘
+# A la fecha: 19-01-2026
 
 # ┌───────────────────────────────────────────────────┐
 # │ 1) Configuración básica para despliegue de datos  │ 
@@ -23,7 +13,7 @@ from sqlalchemy import func, case, and_
 # Datos modificables para la configuración base acorde a los despliegues de cada indicador.
 
 # Título del indicador.
-titulo = "% de hogares sin acceso a sistemas de agua caliente sanitaria"
+titulo = "% de viviendas en calidad de conservación aceptable o regular"
 
 # Datos de corte del mapa.
 CORTES = [
@@ -31,21 +21,21 @@ CORTES = [
     (0.25, 0.50),
     (0.50, 0.75),
     (0.75, 1.00),
-    (1.00, 100.00), 
+    (1.00, 100.00),  # abierto
 ]
 
-# Paleta de colores para el mapa
+# Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0.00 - 0.25
-    "#c6dbef",  # 0.25 - 0.50
-    "#6baed6",  # 0.50 - 0.75
-    "#2171b5",  # 0.75 - 1.00
-    "#08306b",  # 1.00 - 100.00
+    "#f7fbff",  # 0–0,25%
+    "#c6dbef",  # 0,25–0,5%
+    "#6baed6",  # 0,5–0,75%
+    "#2171b5",  # 0,75–1%
+    "#08306b",  # ≥1%
 ]
 
-# ┌───────────────────────────────────────┐
-# │ 2) Cálculo para base de datos CASEN   │ 
-# └───────────────────────────────────────┘
+# ┌─────────────────────────────────────────┐
+# │ 2) Cálculo para base de datos - CASEN   │ 
+# └─────────────────────────────────────────┘
 
 # Se define una función única (es decir, independiente del tipo de cut) que aglutina
 # el filtrado y cálculo del indicador, siendo más fácil de mantener y modularizar.
@@ -53,78 +43,72 @@ def calcular_indicadores_casen(filtro, session):
     #Filtro completo, que incluye el factor del cut (nacional, regional, comunal) e
     # incluye solamente respuestas de los jefes de hogar.
     filtro_completo = and_(filtro, Casen.PCO1_A == 1)
-    total_sinacceso = session.query(
-        # Pondera por el factor de expansión (Casen.EXPR) para ir de muestra a población.
+    total_b_conservacion = session.query(
+        # Acá se define la sumatoria de los datos respectivos que indica la ficha,
+        # que serían todos los valores 1 y 2 de las variables V3, V5 y V7.
         func.sum(
             case(
-                (Casen.V34C == 8, Casen.EXPR),
+                (Casen.V3.in_([1, 2]), Casen.EXPR),
+                (Casen.V5.in_([1, 2]), Casen.EXPR),
+                (Casen.V7.in_([1, 2]), Casen.EXPR),
                 else_=0
-            )
+            )    
         )
+    #El filtro que se aplica acá es el que se recibe como parámetro para definir si
+    # es un cálculo nacional, regional o comunal.
     ).filter(filtro_completo).scalar() or 0
 
-    # Suma ponderada de viviendas por el mismo factor de expansión.
+    # Se calcula el total de viviendas ponderadas por el factor de expansión.
     total_viviendas = session.query(
         func.sum(Casen.EXPR)
     ).filter(filtro_completo).scalar() or 0
 
-    # Porcentaje ponderado de viviendas sin acceso.
-    indicador = total_sinacceso / total_viviendas * 100 if total_viviendas else None
+    # Se calcula el indicador, que es el porcentaje de viviendas sin acceso a electricidad
+    # respecto al total de viviendas.
+    indicador = total_b_conservacion / total_viviendas * 100 if total_viviendas else None
 
     # Se retorna un diccionario con el indicador y los totales formateados.
     return {
         "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
+        "total_indicador": formato_chileno(total_b_conservacion),
         "total_viviendas": formato_chileno(total_viviendas)
     }
 
-# Se define una función que obtiene los tipos de acceso a agua caliente, acorde a los
-# datos establecidos en la encuesta Casen, realizando el filtro previo por el CUT y 
-# por el valor asociado a cada respuesta.
-def acceso_tipo_agua_casen(filtro, session):
-    def _sum(col, valor):
+def habitabilidad_calidad_conservacion_casen(filtro, session):
+     def _sum(col, valor):
         q = session.query(func.sum(case((col == valor, Casen.EXPR), else_=0)))
         if filtro is not True and filtro is not None:
-            q = q.filter(filtro)
+               q = q.filter(filtro)
         return q.scalar() or 0
      
-    gas_licuado = _sum(Casen.V34C, 1)
-    gas_red = _sum(Casen.V34C, 2)
-    paraf_petr = _sum(Casen.V34C, 3)
-    deriv_lenia = _sum(Casen.V34C, 4)
-    electricidad = _sum(Casen.V34C, 5)
-    solar = _sum(Casen.V34C, 6)
-    no_usa = _sum(Casen.V34C, 7)
-    no_tiene = _sum(Casen.V34C, 8)
+     calidad_muro = _sum(Casen.V3, 1) + _sum(Casen.V3, 2)
+     calidad_piso = _sum(Casen.V5, 1) + _sum(Casen.V5, 2)
+     calidad_techo = _sum(Casen.V7, 1) + _sum(Casen.V7, 2)
 
-    return {
-        "gas_licuado": formato_chileno(gas_licuado),
-        "gas_red": formato_chileno(gas_red),
-        "parafina_petr": formato_chileno(paraf_petr),
-        "derivados_madera": formato_chileno(deriv_lenia),
-        "electricidad": formato_chileno(electricidad),
-        "solar": formato_chileno(solar),
-        "no_usa": formato_chileno(no_usa),
-        "no_tiene": formato_chileno(no_tiene)
-    }
+     return {
+        "calidad_muro": formato_chileno(calidad_muro),
+        "calidad_piso": formato_chileno(calidad_piso),
+        "calidad_techo": formato_chileno(calidad_techo)
+     }
 
 # ┌────────────────────────────────┐
 # │  3) Retorno por CUT - CASEN    │ 
 # └────────────────────────────────┘
 
-# Esta función retorna los datos en base al CUT recibido, que puede ser un código
+# Esta función retorna los datos en base al cut recibido, que puede ser un código
 # regional o comunal; y, en el caso que sea None, retorna los datos a nivel nacional.
-def obtener_acceso_agua_caliente_casen(cut, session):
+def obtener_habitabilidad_conservacion_casen(cut, session):
     resultados = {}
-    # Incorpora fuente de datos configurada
+
     if resultados.get("fuente") is None:
         try:
             resultados["fuente"] = ("CASEN" + " " + str(session.query(ConfigFuentes).first().anio_casen))
         except Exception:
             resultados["fuente"] = "CASEN"
-
+        
     if cut is None:
-        # En el caso del "filtro_nacional", retorna todos los datos.
+        # En el caso del CUT nacional (None) se despliegan los datos del indicador
+        # en base a las regiones. 
         filtro_nacional = True  
 
         # Se realiza un filtro con las regiones para hacer el cálculo del mapa a nivel
@@ -132,7 +116,6 @@ def obtener_acceso_agua_caliente_casen(cut, session):
         regiones = session.query(Casen.CUT_REG).distinct().all()
         desglose_regional = {}
         porcentajes_por_region = {}
-
         for reg in regiones:
             # Se obtiene el código de la región.
             cut_reg = reg[0]
@@ -145,7 +128,7 @@ def obtener_acceso_agua_caliente_casen(cut, session):
             porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
 
         # Se calcula el mapa de calor a nivel nacional.
-        resultados["tipo"] = acceso_tipo_agua_casen(filtro_nacional, session)
+        resultados["tipo"] = habitabilidad_calidad_conservacion_casen(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_nacional, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
@@ -154,7 +137,7 @@ def obtener_acceso_agua_caliente_casen(cut, session):
         # En el caso del CUT regional se despliegan los datos de la región,
         # junto al despliegue de porcentajes de la comuna.
         filtro_regional = Casen.CUT_REG == int(cut)
-    
+   
         # Para poder calcular los datos comunales, en el caso de la Casen, hay un
         # pequeño problema o "maña" que presenta actualmente, dado que se debe hacer
         # un query en ambas bases, y cruzar la información en base a los folios, que
@@ -162,8 +145,8 @@ def obtener_acceso_agua_caliente_casen(cut, session):
 
         # Query de primera base (Casen):
         folios_region = session.query(Casen.FOLIO).filter(
-             # Query en base a "cut" regional.
-             Casen.CUT_REG == int(cut)
+            # Query en base a "cut" regional.
+            Casen.CUT_REG == int(cut)
         ).all()
         folios_lista = [f[0] for f in folios_region]
         
@@ -188,12 +171,11 @@ def obtener_acceso_agua_caliente_casen(cut, session):
         # Cálculo de mapa de calor regional:
         porcentajes_por_comuna = {}
         for cut_com, folios_comuna in folios_por_comuna.items():
-            filtro = Casen.FOLIO.in_(folios_comuna)
-            indicadores = calcular_indicadores_casen(filtro, session)
+            filtro_com = Casen.FOLIO.in_(folios_comuna)
+            indicadores = calcular_indicadores_casen(filtro_com, session)
             porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje", 0))
 
-        # Se agrega desgloses y resultados de mapa de calor al retorno final.
-        resultados["tipo"] = acceso_tipo_agua_casen(filtro_regional, session)
+        resultados["tipo"] = habitabilidad_calidad_conservacion_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
@@ -204,8 +186,8 @@ def obtener_acceso_agua_caliente_casen(cut, session):
             CasenComunaProvincia.CUT_COM == int(cut)
         ).all()
         folios_lista = [f[0] for f in folios]
-        filtro_comunal = Casen.FOLIO.in_(folios_lista)
-        resultados["tipo"] = acceso_tipo_agua_casen(filtro_comunal, session)
-        resultados["desglose"] = calcular_indicadores_casen(filtro_comunal, session)
-
+        filtro = Casen.FOLIO.in_(folios_lista)
+        resultados["tipo"] = habitabilidad_calidad_conservacion_casen(filtro, session)
+        resultados["desglose"] = calcular_indicadores_casen(filtro, session)
+    
     return resultados

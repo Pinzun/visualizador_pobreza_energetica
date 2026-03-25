@@ -100,7 +100,8 @@
 
 /* Notas técnicas: usa todo el alto restante */
 .home-layout--notas {
-  display: grid;
+  display: block !important;
+  grid-template-columns: 1fr;
   grid-auto-rows: 1fr; /* todo lo que haya dentro ocupa el alto disponible */
   padding: var(--home-pad);
   border: 1px solid #ccc;
@@ -109,15 +110,10 @@
 }
 
 .nt-pane {
+  width: 100%;
+  box-sizing: border-box;
   min-height: 0;
-  overflow: auto; /* si crece, scrollea dentro */
-}
-
-.notas-tecnicas {
-  height: 100%;
   overflow: auto;
-  max-width: 920px;
-  margin: 0 auto;
 }
 
 /* Responsive simple */

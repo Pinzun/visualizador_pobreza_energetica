@@ -1,7 +1,7 @@
 /* src/styles/NotasTecnicas.css */
 
 .notas-tecnicas {
-  --nt-bg: #fff;
+  --nt-bg: #f9f9f9;
   --nt-fg: #222;
   --nt-muted: #666;
   --nt-border: #e5e7eb;
@@ -14,7 +14,9 @@
   border-radius: 12px;
   padding: 20px;
   margin: 0 auto;
-  max-width: 1200px;
+  width: 100%;
+  max-width: 100%;
+  box-sizing: border-box;
 
   /* si el contenedor padre fija altura (home-layout), esto permite scroll interno */
   height: 100%;
@@ -40,7 +42,7 @@
 /* === layout a dos columnas === */
 .nt-body {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) 360px; /* izquierda fluid, derecha fija */
+  grid-template-columns: 1fr; /* izquierda fluid, derecha fija */
   gap: 16px;
   align-items: start;
   min-height: 0; /* importante para que el contenido pueda scrollear */

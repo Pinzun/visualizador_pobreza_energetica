@@ -76,9 +76,11 @@ def calcular_indicador(filtro, session):
     indicador = (total_sin_calefaccion / total_personas_zona_frias) * 100 if total_personas_zona_frias else 0
 
     return {
-        "total_personas_sin_f": formato_chileno(total_sin_calefaccion),
-        "total_personas_f": formato_chileno(total_personas_zona_frias),
-        "porcentaje_sin_calefaccion": formato_chileno_prom(indicador)}
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sin_calefaccion),
+        "total_b": formato_chileno(total_personas_zona_frias)
+    }
+
 
 def obtener_valores_tabla(filtro, session):
     # Similar a la función anterior, pero solo para obtener los totales.
@@ -105,8 +107,8 @@ def obtener_valores_tabla(filtro, session):
     total_personas_zona_frias = total_personas_zona_frias or 0
 
     return {
-        "total_personas_sin_f": formato_chileno(total_sin_calefaccion),
-        "total_personas_f": formato_chileno(total_personas_zona_frias)}
+        "total_a": formato_chileno(total_sin_calefaccion),
+        "total_b": formato_chileno(total_personas_zona_frias)}
 
 def obtener_indicador_zonas_frias(cut, session):
     resultados = {}

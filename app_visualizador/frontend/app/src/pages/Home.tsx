@@ -22,14 +22,24 @@ const getCommuneCode = (x: any): string =>
 const getName = (x: any): string =>
   x?.name ?? x?.nombre ?? x?.NOMBRE ?? x?.REGION ?? x?.COMUNA ?? "";
 
-type TabKey = "video" | "mapa" | "notas_tecnicas" | "programas_disponibles";
+type TabKey = "mapa" | "notas_tecnicas" | "programas_disponibles";
+
+const INDICADORES_ASEQUIBILIDAD = [
+  "asequibilidad_med_nac_proporcion",
+  "asequibilidad_med_nac_menor",
+  "asequibilidad_med_nac_doble",
+  "asequibilidad_gasto_10p",
+  "asequibilidad_g_insuficiente",
+  "asequibilidad_g_excesivo",
+  "asequibilidad_gasto_energ_p",
+];
 
 function Home() {
   const [tab, setTab] = useState<TabKey>("mapa");
-
   const [selectedRegion, setSelectedRegion] = useState<string>("");
   const [selectedComuna, setSelectedComuna] = useState<string>("");
   const [indicator, setIndicator] = useState<string | null>(null);
+  const [showVideoModal, setShowVideoModal] = useState(true);
 
   useEffect(() => setSelectedComuna(""), [selectedRegion]);
 
@@ -78,18 +88,17 @@ function Home() {
 
   const regiones = useMemo<any[]>(
     () => (regionesObj ? Object.values(regionesObj) : []),
-    [regionesObj]
+    [regionesObj],
   );
   const comunas = useMemo<any[]>(
     () => (comunasObj ? Object.values(comunasObj) : []),
-    [comunasObj]
+    [comunasObj],
   );
 
   const CHILE_BOUNDS = boundsData?.CHILE_BOUNDS;
   const REGION_BOUNDS = boundsData?.REGION_BOUNDS || {};
   const COMUNA_BOUNDS = boundsData?.COMUNAS_BOUNDS || {};
 
-  // 🔹 Estado que “alimenta” InfoPanel -> Home (colores + leyenda)
   const [mapData, setMapData] = useState<{
     colores_mapa?: Record<string, string>;
     leyenda_mapa?: {
@@ -105,29 +114,83 @@ function Home() {
   const selectedName = selectedComuna
     ? getName(comunas.find((c) => getCommuneCode(c) === selectedComuna))
     : selectedRegion
-    ? getName(regiones.find((r) => getRegionCode(r) === selectedRegion))
-    : "Chile";
+      ? getName(regiones.find((r) => getRegionCode(r) === selectedRegion))
+      : "Chile";
 
   const selectedLevel = selectedComuna
     ? "comuna"
     : selectedRegion
-    ? "region"
-    : "nacional";
+      ? "region"
+      : "nacional";
 
   const tabs = [
     { key: "mapa", label: "Visualizador" },
-    { key: "video", label: "¿Qué es la pobreza energética?" },
     { key: "notas_tecnicas", label: "Notas técnicas" },
     { key: "programas_disponibles", label: "Programas disponibles" },
   ] as const;
 
   const handleTabChange = (key: string) => setTab(key as TabKey);
-
-  // CUT actual que deben consultar los indicadores
   const currentCut = selectedComuna || selectedRegion || undefined;
+  const bloquearSelectores =
+    indicator !== null && INDICADORES_ASEQUIBILIDAD.includes(indicator);
 
   return (
     <div className="home-wrapper">
+      {/* ── Modal de video ── */}
+      {showVideoModal && (
+        <div
+          style={{
+            position: "fixed",
+            inset: 0,
+            background: "rgba(0,0,0,0.6)",
+            zIndex: 2000,
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
+          }}
+        >
+          <div
+            style={{
+              background: "#fff",
+              borderRadius: 12,
+              padding: 24,
+              width: "min(720px, 92vw)",
+              position: "relative",
+              boxShadow: "0 8px 32px rgba(0,0,0,0.3)",
+            }}
+          >
+            <button
+              onClick={() => setShowVideoModal(false)}
+              style={{
+                position: "absolute",
+                top: 10,
+                right: 14,
+                background: "none",
+                border: "none",
+                fontSize: 22,
+                cursor: "pointer",
+                color: "#555",
+                lineHeight: 1,
+              }}
+              aria-label="Cerrar"
+            >
+              ×
+            </button>
+            <h3 style={{ marginTop: 0, marginBottom: 16, fontSize: 16 }}>
+              ¿Qué es la pobreza energética?
+            </h3>
+            <VideoPlayer
+              src="/video/video_pe.mp4"
+              poster="/image/poster_pe.png"
+              autoPlay
+              muted
+              controls
+            />
+          </div>
+        </div>
+      )}
+
+      {/* ── Tabs principales ── */}
       <div className="info-box tabselector2">
         <TabSelector
           tabs={tabs as any}
@@ -136,20 +199,29 @@ function Home() {
         />
       </div>
 
-      {tab === "video" && (
-        <div className="video-16x9">
-          <VideoPlayer
-            src="/video/video_pe.mp4"
-            poster="/image/poster_pe.png"
-            autoPlay
-            muted
-            controls
-          />
-        </div>
-      )}
-
+      {/* ── Tab: Visualizador ── */}
       {tab === "mapa" && (
         <div className="home-layout">
+          {/* Botón discreto para reabrir el video */}
+          <button
+            onClick={() => setShowVideoModal(true)}
+            style={{
+              position: "absolute",
+              top: 8,
+              right: 8,
+              background: "none",
+              border: "1px solid #ccc",
+              borderRadius: 6,
+              padding: "4px 10px",
+              fontSize: 12,
+              color: "#666",
+              cursor: "pointer",
+              zIndex: 10,
+            }}
+          >
+            ▶ ¿Qué es la pobreza energética?
+          </button>
+
           {/* Columna izquierda */}
           <div className="left-col">
             <div className="select-box">
@@ -158,6 +230,7 @@ function Home() {
                 <select
                   value={selectedRegion}
                   onChange={(e) => setSelectedRegion(e.target.value)}
+                  disabled={bloquearSelectores}
                 >
                   <option value="">Seleccione una región</option>
                   {regiones.map((region) => {
@@ -179,6 +252,7 @@ function Home() {
                   value={selectedComuna}
                   onChange={(e) => setSelectedComuna(e.target.value)}
                   disabled={
+                    bloquearSelectores ||
                     !selectedRegion ||
                     geoStatus === "loading" ||
                     geoStatus === "partial"
@@ -201,6 +275,19 @@ function Home() {
                 </select>
               </label>
 
+              {bloquearSelectores && (
+                <span
+                  style={{
+                    fontSize: 12,
+                    color: "#888",
+                    marginTop: 4,
+                    display: "block",
+                  }}
+                >
+                  Este indicador solo está disponible a nivel nacional.
+                </span>
+              )}
+
               {geoError && (
                 <span style={{ color: "red" }}>
                   Error geo: {String(geoError)}
@@ -218,10 +305,8 @@ function Home() {
                 comunaBounds={COMUNA_BOUNDS}
                 chileBounds={CHILE_BOUNDS}
                 onComunaClick={(cutCom) => setSelectedComuna(cutCom)}
-                // 🔹 Usamos lo que vino desde InfoPanel
                 coloresMapa={mapData.colores_mapa ?? {}}
               />
-
               {mapData.leyenda_mapa && (
                 <div
                   style={{
@@ -245,13 +330,13 @@ function Home() {
               selectedDivAdmiName={selectedName}
               currentCut={currentCut}
               onIndicatorChange={setIndicator}
-              // 🔹 Recibimos colores/leyenda aquí
               onMapDataChange={setMapData}
             />
           </div>
         </div>
       )}
 
+      {/* ── Tab: Notas técnicas ── */}
       {tab === "notas_tecnicas" && (
         <div className="home-layout home-layout--notas">
           <div className="nt-pane">

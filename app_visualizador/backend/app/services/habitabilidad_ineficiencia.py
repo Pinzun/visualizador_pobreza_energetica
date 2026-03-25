@@ -53,9 +53,10 @@ def calcular_indicador(filtro, session):
         indicador = ((total_2000_2006 + total_2007_2024)/total_censo2024)
 
     return {
-        "total_viviendas": formato_chileno(total_censo2024),
-        "total_viviendas_reglamento": formato_chileno(total_2000_2006 + total_2007_2024),
-        "porcentaje_eficiente": formato_chileno_prom(indicador)}
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_2000_2006 + total_2007_2024),
+        "total_b": formato_chileno(total_censo2024)
+        }
 
 def obtener_valores_tabla(filtro, session):
     total_censo2024 = session.query(func.sum(HabitabilidadIneficiencia.CENSO2024)).filter(filtro).scalar()

@@ -51,7 +51,7 @@ def calcular_indicador(filtro, session):
 	med_nac_menor = resultado or 0
 
 	return {
-		"med_nac_menor": formato_chileno_prom(med_nac_menor)
+		"indicador": formato_chileno_prom(med_nac_menor)
 	}
 
 
@@ -80,8 +80,7 @@ def obtener_valores_tabla(filtro, session):
 		if resultado:
 			med_nac_menor, _cut_reg = resultado
 			resultados[str(macrozona)] = {
-				"macrozona": macrozona,
-				"med_nac_menor": formato_chileno_prom(med_nac_menor),
+				"indicador": formato_chileno_prom(med_nac_menor),
 			}
 
 	return resultados

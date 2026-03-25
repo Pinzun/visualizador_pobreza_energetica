@@ -46,9 +46,10 @@ def calcular_indicador(filtro, session):
     indicador = (total_vulnerable / total * 100) if total else 0.0
 
     return {
-        "total_comunas_vulnerables": formato_chileno(total_vulnerable),
-        "total_comunas": formato_chileno(total),
-        "porcentaje_vulnerables": formato_chileno_prom(indicador)}
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_vulnerable),
+        "total_b": formato_chileno(total)
+}
 
 def obtener_valores_tabla(filtro, session):
     total_vulnerable = session.query(func.count()).select_from(AsequibilidadVulnerable).filter(

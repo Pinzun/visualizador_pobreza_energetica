@@ -69,9 +69,9 @@ def calcular_indicadores_casen(filtro, session):
 
     # Se retorna un diccionario con el indicador y los totales formateados.
     return {
-        "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_b_conservacion),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_b_conservacion),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 def habitabilidad_calidad_conservacion_casen(filtro, session):
@@ -125,7 +125,7 @@ def obtener_habitabilidad_conservacion_casen(cut, session):
             ind = calcular_indicadores_casen(filtro, session)
             cod = str(cut_reg).zfill(2)
             desglose_regional[cod] = ind
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("indicador", 0))
 
         # Se calcula el mapa de calor a nivel nacional.
         resultados["tipo"] = habitabilidad_calidad_conservacion_casen(filtro_nacional, session)
@@ -173,7 +173,7 @@ def obtener_habitabilidad_conservacion_casen(cut, session):
         for cut_com, folios_comuna in folios_por_comuna.items():
             filtro_com = Casen.FOLIO.in_(folios_comuna)
             indicadores = calcular_indicadores_casen(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje", 0))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("indicador", 0))
 
         resultados["tipo"] = habitabilidad_calidad_conservacion_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)

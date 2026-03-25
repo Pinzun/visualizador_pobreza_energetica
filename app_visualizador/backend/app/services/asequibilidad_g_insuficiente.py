@@ -51,7 +51,7 @@ def calcular_indicador(filtro, session):
 	g_insuficiente = resultado or 0
 
 	return {
-		"g_insuficiente": formato_chileno_prom(g_insuficiente)
+		"indicador": formato_chileno_prom(g_insuficiente)
 	}
 
 
@@ -80,8 +80,7 @@ def obtener_valores_tabla(filtro, session):
 		if resultado:
 			g_insuficiente, _cut_reg = resultado
 			resultados[str(macrozona)] = {
-				"macrozona": macrozona,
-				"g_insuficiente": formato_chileno_prom(g_insuficiente),
+				"indicador": formato_chileno_prom(g_insuficiente),
 			}
 
 	return resultados

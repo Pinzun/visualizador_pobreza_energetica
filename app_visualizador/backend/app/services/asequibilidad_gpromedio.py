@@ -47,7 +47,7 @@ def calcular_indicador(filtro, session):
     gasto_promedio = resultado or 0
 
     return {
-        "gasto_promedio": formato_chileno_prom(gasto_promedio)
+        "indicador": formato_chileno_prom(gasto_promedio)
     }
 
 def obtener_valores_tabla(filtro, session):
@@ -75,8 +75,7 @@ def obtener_valores_tabla(filtro, session):
         if resultado:
             gasto_prom, cut_reg = resultado
             resultados[str(macrozona)] = {
-                "macrozona": macrozona,
-                "gasto_promedio": formato_chileno_prom(gasto_prom)
+                "indicador": formato_chileno_prom(gasto_prom)
             }
     
     return resultados

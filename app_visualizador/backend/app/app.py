@@ -29,8 +29,8 @@ def create_app():
     # ---------------------------
     # Configuración de CORS
     # ---------------------------
-    cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
-    # cors_origins = ["http://pobrezaenergetica.minenergia.cl", "https://pobrezaenergetica.minenergia.cl"]
+    # cors_origins = os.environ.get("CORS_ORIGINS", "*").split(",")
+    cors_origins = ["http://pobrezaenergetica.minenergia.cl", "https://pobrezaenergetica.minenergia.cl"]
     CORS(app, supports_credentials=True, origins=cors_origins)
 
     # ---------------------------
@@ -43,4 +43,4 @@ def create_app():
 
 if __name__ == "__main__":
     app = create_app()
-    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 4432)))
+    app.run(host="0.0.0.0", port=int(os.environ.get("PORT", 8000)))

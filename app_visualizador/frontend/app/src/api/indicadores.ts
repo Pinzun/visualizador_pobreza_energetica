@@ -1,8 +1,8 @@
 // src/api/indicadores.ts
 export type Desglose = {
-  porcentaje_sin_acceso: number; // llegó como número en el payload real
-  total_indicador: string; // ← nombre real del backend
-  total_viviendas: string;
+  indicador: number; // llegó como número en el payload real
+  total_a: string; // ← nombre real del backend
+  total_b: string;
 };
 
 export type TipoEnergeticoRaw = {

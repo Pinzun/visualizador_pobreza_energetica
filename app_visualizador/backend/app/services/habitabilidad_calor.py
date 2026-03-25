@@ -44,16 +44,17 @@ def calcular_indicador(filtro, session):
     indicador = total_calor/total_sincalor*100
 
     return {
-        "total_personas_sin_f": formato_chileno(total_sincalor),
-        "total_personas_f": formato_chileno(total_calor),
-        "porcentaje_con_calor": formato_chileno_prom(indicador)}
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sincalor),
+        "total_b": formato_chileno(total_calor)
+}
 
 def obtener_valores_tabla(filtro, session):
     total_calor = session.query(func.sum(HabitabilidadCalor.H_TOTAL_CON_CALOR)).filter(filtro).scalar()
     total_sincalor = session.query(func.sum(HabitabilidadCalor.H_TOTAL_SIN_CALOR)).filter(filtro).scalar()
     return {
-        "total_personas_sin_f": formato_chileno(total_sincalor),
-        "total_personas_f": formato_chileno(total_calor)}
+        "total_a": formato_chileno(total_sincalor),
+        "total_b": formato_chileno(total_calor)}
 
 def obtener_indicador_calor(cut, session):
     resultados = {}

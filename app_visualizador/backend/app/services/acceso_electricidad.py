@@ -64,8 +64,8 @@ def calcular_indicadores_casen(filtro, session):
 
     return {
         "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "total_a": formato_chileno(total_sinacceso),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 def acceso_tipo_electricidad_casen(filtro, session):
@@ -186,9 +186,9 @@ def calcular_indicadores_censo(filtro, session):
     indicador = total_sinacceso / total_viviendas * 100 if total_viviendas else None
 
     return {
-        "porcentaje_sin_acceso": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sinacceso),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 def acceso_tipo_energetico_censo(filtro, session):
@@ -241,7 +241,7 @@ def obtener_acceso_electricidad_censo(cut, session):
             filtro_reg = AccesoCenso.CUT_REG == cut_reg
             ind = calcular_indicadores_censo(filtro_reg, session)
             cod = str(cut_reg).zfill(2)  # nacional sí usa "01".."16"
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_sin_acceso"))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("indicador"))
 
         resultados["desglose"] = calcular_indicadores_censo(filtro_nacional, session)
         resultados["tipo"] = acceso_tipo_energetico_censo(filtro_nacional, session)
@@ -260,7 +260,7 @@ def obtener_acceso_electricidad_censo(cut, session):
             cut_com = com[0]
             filtro_com = AccesoCenso.CUT_COM == cut_com
             ind = calcular_indicadores_censo(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje_sin_acceso"))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("indicador"))
 
         resultados["tipo"] = acceso_tipo_energetico_censo(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_censo(filtro_regional, session)

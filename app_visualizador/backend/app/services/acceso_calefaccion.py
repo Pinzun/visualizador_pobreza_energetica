@@ -72,15 +72,15 @@ def calcular_indicadores_casen(filtro, session):
         func.sum(Casen.EXPR)
     ).filter(filtro_indicador).scalar() or 0
 
-    # Se calcula el indicador, que es el porcentaje de viviendas sin acceso a sistemas de calefacción
+    # Se calcula el indicador, que es el indicador de viviendas sin acceso a sistemas de calefacción
     # respecto al total de viviendas.
     indicador = total_sinacceso / total_viviendas * 100 if total_viviendas else None
 
     # Se retorna un diccionario con el indicador y los totales formateados.
     return {
-        "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sinacceso),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 # Se define una función que obtiene los tipos, acorde a los
@@ -137,7 +137,7 @@ def obtener_acceso_calefaccion_casen(cut, session):
         # regional.
         regiones = session.query(Casen.CUT_REG).distinct().all()
         desglose_regional = {}
-        porcentajes_por_region = {}
+        indicadors_por_region = {}
         for reg in regiones:
             # Se obtiene el código de la región.
             cut_reg = reg[0]
@@ -147,17 +147,17 @@ def obtener_acceso_calefaccion_casen(cut, session):
             ind = calcular_indicadores_casen(filtro, session)
             cod = str(cut_reg).zfill(2)
             desglose_regional[cod] = ind
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
+            indicadors_por_region[cod] = formato_chileno_prom(ind.get("indicador", 0))
 
         # Se calcula el mapa de calor a nivel nacional.
         resultados["tipo"] = acceso_tipo_combustible_censo_casen(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_nacional, session)
-        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
+        resultados["colores_mapa"] = calcular_colores_mapa(indicadors_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
 
     elif len(str(cut)) <= 2:
         # En el caso del CUT regional se despliegan los datos de la región,
-        # junto al despliegue de porcentajes de la comuna.
+        # junto al despliegue de indicadors de la comuna.
         filtro_regional = Casen.CUT_REG == int(cut)
    
         # Para poder calcular los datos comunales, en el caso de la Casen, hay un
@@ -191,15 +191,15 @@ def obtener_acceso_calefaccion_casen(cut, session):
              folios_por_comuna.setdefault(cut_com, []).append(folio)
 
         # Cálculo de mapa de calor regional:
-        porcentajes_por_comuna = {}
+        indicadors_por_comuna = {}
         for cut_com, folios_comuna in folios_por_comuna.items():
             filtro_com = Casen.FOLIO.in_(folios_comuna)
             indicadores = calcular_indicadores_casen(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje", 0))
+            indicadors_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("indicador", 0))
 
         resultados["tipo"] = acceso_tipo_combustible_censo_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)
-        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
+        resultados["colores_mapa"] = calcular_colores_mapa(indicadors_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
 
     else:
@@ -234,15 +234,15 @@ def calcular_indicadores_censo(filtro, session):
         func.sum(AccesoCenso.TOTAL)
     ).filter(filtro).scalar() or 0
 
-    # Se calcula el indicador, que es el porcentaje de viviendas sin acceso a calefacción
+    # Se calcula el indicador, que es el indicador de viviendas sin acceso a calefacción
     # respecto al total de viviendas.
     indicador = total_sinacceso / total_viviendas * 100 if total_viviendas else None
 
     # Se retorna un diccionario con el indicador y los totales formateados.
     return {
-        "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sinacceso),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 def acceso_tipo_combustible_censo(filtro, session):
@@ -297,18 +297,18 @@ def obtener_acceso_calefaccion_censo(cut, session):
         # un desglose por regiones, que permite utilizar los datos para definirlo en
         # el frontend con el semaforo.
         regiones = session.query(AccesoCenso.CUT_REG).distinct().all()
-        porcentajes_por_region = {}
+        indicadors_por_region = {}
 
         for reg in regiones:
             cut_reg = reg[0]
             filtro_reg = AccesoCenso.CUT_REG == cut_reg
             ind = calcular_indicadores_censo(filtro_reg, session)
             cod = str(cut_reg).zfill(2)
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
+            indicadors_por_region[cod] = formato_chileno_prom(ind.get("indicador", 0))
 
         resultados["tipo"] = acceso_tipo_combustible_censo(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_censo(filtro_nacional, session)
-        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
+        resultados["colores_mapa"] = calcular_colores_mapa(indicadors_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
 
     elif len(str(cut)) <= 2:
@@ -321,17 +321,17 @@ def obtener_acceso_calefaccion_censo(cut, session):
         comunas = session.query(AccesoCenso.CUT_COM).filter(
             AccesoCenso.CUT_REG == int(cut)).distinct().all()
         
-        porcentajes_por_comuna = {}
+        indicadors_por_comuna = {}
         for com in comunas:
             cut_com = com[0]
             filtro_com = AccesoCenso.CUT_COM == cut_com
             ind = calcular_indicadores_censo(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje", 0))
+            indicadors_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("indicador", 0))
         
         # Se agrega desgloses y resultados de mapa de calor al retorno final.
         resultados["tipo"] = acceso_tipo_combustible_censo(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_censo(filtro_regional, session)
-        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
+        resultados["colores_mapa"] = calcular_colores_mapa(indicadors_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
 
     else:

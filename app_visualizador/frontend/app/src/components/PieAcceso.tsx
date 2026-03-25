@@ -6,13 +6,13 @@ import {
   Cell,
   Tooltip,
   Legend,
-  type PieLabelRenderProps, // 👈 importa el tipo correcto
+  type PieLabelRenderProps,
 } from "recharts";
 
 export type DesgloseAcceso = {
-  porcentaje: string;
-  total_indicador: string;
-  total_viviendas: string;
+  indicador: number; // ← era porcentaje
+  total_a: string; // ← era total_indicador
+  total_b: string; // ← era total_viviendas
 };
 
 type Props = {
@@ -32,21 +32,20 @@ function parseCLNumber(s: string | number | null | undefined): number {
   return Number.isFinite(n) ? n : 0;
 }
 
-// 👇 renderer tipado con PieLabelRenderProps
 const renderPieLabel = (props: PieLabelRenderProps) => {
-  const name = (props as any).name ?? ""; // name puede venir en payload, dependerá de la versión
+  const name = (props as any).name ?? "";
   const percent = Number((props as any).percent ?? 0);
   return `${name}: ${(percent * 100).toFixed(0)}%`;
 };
 
 export default function PieAcceso({ desglose, height = 250, title }: Props) {
-  const totalSin = parseCLNumber(desglose?.total_indicador);
-  const totalViviendas = parseCLNumber(desglose?.total_viviendas);
-  const totalCon = Math.max(totalViviendas - totalSin, 0);
+  const totalA = parseCLNumber(desglose?.total_a); // ← era total_indicador
+  const totalB = parseCLNumber(desglose?.total_b); // ← era total_viviendas
+  const totalCon = Math.max(totalB - totalA, 0);
 
   const data = [
-    { name: "Sin electricidad", value: totalSin },
-    { name: "Con electricidad", value: totalCon },
+    { name: "Sin acceso", value: totalA }, // ← era "Sin electricidad"
+    { name: "Con acceso", value: totalCon }, // ← era "Con electricidad"
   ];
 
   return (

@@ -3,6 +3,8 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import TabSelector from "./TabSelector";
 import PieAcceso from "./PieAcceso";
 import CommonBarChart from "./BarChart";
+import SaidiChart from "./SaidiChart";
+import AsequibilidadChart from "./AsequibilidadChart";
 
 import {
   TAB_META,
@@ -163,6 +165,19 @@ function InfoPanel({
     TITULOS.barras[(indicator as keyof typeof TITULOS.barras) ?? "default"] ??
     TITULOS.barras.default;
 
+  const INDICADORES_ASEQUIBILIDAD = [
+    "asequibilidad_med_nac_proporcion",
+    "asequibilidad_med_nac_menor",
+    "asequibilidad_med_nac_doble",
+    "asequibilidad_gasto_10p",
+    "asequibilidad_g_insuficiente",
+    "asequibilidad_g_excesivo",
+    "asequibilidad_gasto_energ_p",
+  ];
+
+  const esAsequibilidad =
+    indicator !== null && INDICADORES_ASEQUIBILIDAD.includes(indicator);
+
   // Estado sin tabs configuradas
   if (!tabs.length) {
     return (
@@ -210,7 +225,6 @@ function InfoPanel({
               ))}
             </select>
           </label>
-
           {/* Loading / Error mínimos */}
           {loading && <div style={{ marginTop: 8 }}>Cargando indicador…</div>}
           {error && (
@@ -218,48 +232,86 @@ function InfoPanel({
               Error: {String(error)}
             </div>
           )}
-
           {/* ======= FILA DE VISUALIZACIONES ======= */}
           <div className="viz-row">
-            {/* Pie (solo si hay desglose válido) */}
-            {desglose ? (
-              <div className="viz-card">
+            {/* Asequibilidad */}
+            {esAsequibilidad ? (
+              <div className="viz-card" style={{ width: "100%" }}>
                 <div className="viz-title">{pieTitle}</div>
-                <div className="pie-acceso">
-                  <PieAcceso desglose={desglose as any} />
-                </div>
+                {loading ? (
+                  <div style={{ color: "#666", padding: 16 }}>Cargando…</div>
+                ) : (
+                  <AsequibilidadChart payload={payload as any} />
+                )}
               </div>
-            ) : (
-              <div className="viz-card" aria-live="polite">
-                <div className="viz-title">{pieTitle}</div>
-                <div style={{ color: "#666", paddingTop: 8 }}>
-                  No hay datos para el gráfico de torta.
+            ) : /* SAIDI */
+            indicator === "calidad_saidi" && payload ? (
+              <div className="viz-card" style={{ width: "100%" }}>
+                <div className="viz-title">
+                  Interrupción del servicio eléctrico (SAIDI)
                 </div>
-              </div>
-            )}
-
-            {/* Barras (solo si hay tipo_energetico) */}
-            {tipo_energetico ? (
-              <div className="viz-card">
-                <div className="viz-title">{barrasTitle}</div>
-                <div className="bar-wrapper">
-                  <CommonBarChart
-                    dataTipo={tipo_energetico as any}
-                    yDivisor={1000}
-                    yLabel="Miles de viviendas"
+                {loading ? (
+                  <div style={{ color: "#666", padding: 16 }}>
+                    Cargando datos SAIDI…
+                  </div>
+                ) : (
+                  <SaidiChart
+                    payload={payload as any}
+                    selectedRegion={
+                      currentCut && currentCut.length <= 2
+                        ? currentCut
+                        : undefined
+                    }
+                    selectedComuna={
+                      currentCut && currentCut.length > 2
+                        ? currentCut
+                        : undefined
+                    }
                   />
-                </div>
+                )}
               </div>
             ) : (
-              <div className="viz-card" aria-live="polite">
-                <div className="viz-title">{barrasTitle}</div>
-                <div style={{ color: "#666", paddingTop: 8 }}>
-                  No hay datos para el gráfico de barras.
-                </div>
-              </div>
+              /* Resto de indicadores: pie + barras */
+              <>
+                {desglose ? (
+                  <div className="viz-card">
+                    <div className="viz-title">{pieTitle}</div>
+                    <div className="pie-acceso">
+                      <PieAcceso desglose={desglose as any} />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="viz-card" aria-live="polite">
+                    <div className="viz-title">{pieTitle}</div>
+                    <div style={{ color: "#666", paddingTop: 8 }}>
+                      No hay datos para el gráfico de torta.
+                    </div>
+                  </div>
+                )}
+
+                {tipo_energetico ? (
+                  <div className="viz-card">
+                    <div className="viz-title">{barrasTitle}</div>
+                    <div className="bar-wrapper">
+                      <CommonBarChart
+                        dataTipo={tipo_energetico as any}
+                        yDivisor={1000}
+                        yLabel="Miles de viviendas"
+                      />
+                    </div>
+                  </div>
+                ) : (
+                  <div className="viz-card" aria-live="polite">
+                    <div className="viz-title">{barrasTitle}</div>
+                    <div style={{ color: "#666", paddingTop: 8 }}>
+                      No hay datos para el gráfico de barras.
+                    </div>
+                  </div>
+                )}
+              </>
             )}
           </div>
-          {/* ======= /FILA DE VISUALIZACIONES ======= */}
+          {/* ======= /FILA DE VISUALIZACIONES ======= */}{" "}
         </div>
       </div>
     </div>

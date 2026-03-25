@@ -14,8 +14,7 @@
       {
         "value": "acceso_agua_caliente",
         "label": "Hogares sin sistema de agua caliente"
-      },
-      { "value": "acceso_zonas_t", "label": "Acceso por zonas térmicas" }
+      }
     ]
   },
   "calidad": {

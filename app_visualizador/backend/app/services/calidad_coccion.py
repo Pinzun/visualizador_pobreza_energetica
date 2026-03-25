@@ -77,9 +77,9 @@ def calcular_indicadores_casen(filtro, session):
 
     # Se retorna un diccionario con el indicador y los totales formateados.
     return {
-        "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sinacceso),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 def calidad_tipo_combustible_casen(filtro, session):
@@ -143,7 +143,7 @@ def obtener_calidad_coccion_casen(cut, session):
             ind = calcular_indicadores_casen(filtro, session)
             cod = str(cut_reg).zfill(2)
             desglose_regional[cod] = ind
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("indicador", 0))
 
         # Se calcula el mapa de calor a nivel nacional.
         resultados["tipo"] = calidad_tipo_combustible_casen(filtro_nacional, session)
@@ -191,7 +191,7 @@ def obtener_calidad_coccion_casen(cut, session):
         for cut_com, folios_comuna in folios_por_comuna.items():
             filtro_com = Casen.FOLIO.in_(folios_comuna)
             indicadores = calcular_indicadores_casen(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje", 0))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("indicador", 0))
 
         resultados["tipo"] = calidad_tipo_combustible_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)
@@ -239,9 +239,9 @@ def calcular_indicadores_censo(filtro, session):
 
     # Se retorna un diccionario con el indicador y los totales formateados.
     return {
-        "porcentaje": formato_chileno_prom(indicador),
-        "total_indicador": formato_chileno(total_sinacceso),
-        "total_viviendas": formato_chileno(total_viviendas)
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sinacceso),
+        "total_b": formato_chileno(total_viviendas)
     }
 
 def calidad_tipo_combustible_censo(filtro, session):
@@ -303,7 +303,7 @@ def obtener_calidad_coccion_censo(cut, session):
             filtro_reg = CalidadCenso.CUT_REG == cut_reg
             ind = calcular_indicadores_censo(filtro_reg, session)
             cod = str(cut_reg).zfill(2)
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje", 0))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("indicador", 0))
 
         resultados["tipo"] = calidad_tipo_combustible_censo(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_censo(filtro_nacional, session)
@@ -325,7 +325,7 @@ def obtener_calidad_coccion_censo(cut, session):
             cut_com = com[0]
             filtro_com = CalidadCenso.CUT_COM == cut_com
             ind = calcular_indicadores_censo(filtro_com, session)
-            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("porcentaje", 0))
+            porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(ind.get("indicador", 0))
         
         # Se agrega desgloses y resultados de mapa de calor al retorno final.
         resultados["tipo"] = calidad_tipo_combustible_censo(filtro_regional, session)

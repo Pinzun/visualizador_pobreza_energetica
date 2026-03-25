@@ -44,17 +44,17 @@ def calcular_indicador(filtro, session):
     indicador = total_frio/total_sinfrio*100
 
     return {
-        "total_personas_sin_f": formato_chileno(total_sinfrio),
-        "total_personas_f": formato_chileno(total_frio),
-        "porcentaje_con_frio": formato_chileno_prom(indicador)}
+        "indicador": formato_chileno_prom(indicador),
+        "total_a": formato_chileno(total_sinfrio),
+        "total_b": formato_chileno(total_frio)}
 
 def obtener_valores_tabla(filtro, session):
     total_frio = session.query(func.sum(HabitabilidadFrio.H_TOTAL_CON_FRIO)).filter(filtro).scalar()
     total_sinfrio = session.query(func.sum(HabitabilidadFrio.H_TOTAL_SIN_FRIO)).filter(filtro).scalar()
 
     return {
-        "total_personas_sin_f": formato_chileno(total_sinfrio),
-        "total_personas_f": formato_chileno(total_frio)}
+        "total_a": formato_chileno(total_sinfrio),
+        "total_b": formato_chileno(total_frio)}
 
 def obtener_indicador_frio(cut, session):
     resultados = {}

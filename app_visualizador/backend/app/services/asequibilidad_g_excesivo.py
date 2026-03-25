@@ -51,7 +51,7 @@ def calcular_indicador(filtro, session):
 	g_excesivo = resultado or 0
 
 	return {
-		"g_excesivo": formato_chileno_prom(g_excesivo)
+		"indicador": formato_chileno_prom(g_excesivo)
 	}
 
 
@@ -80,8 +80,7 @@ def obtener_valores_tabla(filtro, session):
 		if resultado:
 			g_excesivo, _cut_reg = resultado
 			resultados[str(macrozona)] = {
-				"macrozona": macrozona,
-				"g_excesivo": formato_chileno_prom(g_excesivo),
+				"indicador": formato_chileno_prom(g_excesivo),
 			}
 
 	return resultados

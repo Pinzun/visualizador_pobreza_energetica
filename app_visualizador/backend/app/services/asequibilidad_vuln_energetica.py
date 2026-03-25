@@ -1,4 +1,4 @@
-# services/asequibilidad_vuln_energetica.py
+﻿# services/asequibilidad_vuln_energetica.py
 from models import AsequibilidadVulnerable
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            calcular_colores_mapa, construir_leyenda_mapa)
@@ -26,11 +26,11 @@ CORTES = [
 
 # Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0–0,25%
-    "#c6dbef",  # 0,25–0,5%
-    "#6baed6",  # 0,5–0,75%
-    "#2171b5",  # 0,75–1%
-    "#08306b",  # ≥1%
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
 
 # ┌─────────────────────────────────┐
@@ -80,7 +80,7 @@ def obtener_indicador_vulnerable(cut, session):
             cod = str(cut_reg)
             desglose_regional[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
-            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje_vulnerables"))
+            porcentajes_por_region[cod] = formato_chileno_prom(ind.get("indicador"))
         resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
@@ -99,10 +99,11 @@ def obtener_indicador_vulnerable(cut, session):
             cod = str(cut_com)
             desglose_comunal[cod] = ind
             # Toma el porcentaje (string) y lo parsea a float %
-            porcentajes_por_comuna[cod] = formato_chileno_prom(ind.get("porcentaje_vulnerables"))
+            porcentajes_por_comuna[cod] = formato_chileno_prom(ind.get("indicador"))
 
         resultados["tipo"] = obtener_valores_tabla(filtro, session)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
+        resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     elif len(str(cut)) > 2:
@@ -112,3 +113,4 @@ def obtener_indicador_vulnerable(cut, session):
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     return resultados
+

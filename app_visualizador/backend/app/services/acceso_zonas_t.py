@@ -1,4 +1,4 @@
-# services/acceso_zonas_t.py
+﻿# services/acceso_zonas_t.py
 from models import AccesoZonasT, CalidadCenso
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            calcular_colores_mapa, construir_leyenda_mapa)
@@ -17,20 +17,20 @@ titulo = "% hogares sin acceso a sist. de calefación en zonas térmicas frías"
 
 # Datos de corte del mapa.
 CORTES = [
-    (0.00, 0.25),
-    (0.25, 0.50),
-    (0.50, 0.75),
-    (0.75, 1.00),
-    (1.00, 100.00),  # abierto
+    (0.00, 25.00),  # 0% a 25%
+    (25.00, 50.00),
+    (50.00, 75.00),
+    (75.00, 100.00),
+    (100.00, 100.00),  # abierto
 ]
 
 # Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0–0,25%
-    "#c6dbef",  # 0,25–0,5%
-    "#6baed6",  # 0,5–0,75%
-    "#2171b5",  # 0,75–1%
-    "#08306b",  # ≥1%
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
 
 # ┌─────────────────────────────────┐
@@ -147,7 +147,8 @@ def obtener_indicador_zonas_frias(cut, session):
 
         for com in comunas:
             cut_com = com[0]
-            # Filtro para una comuna específica en AccesoZonasT
+
+# Filtro para una comuna específica en AccesoZonasT
             filtro_com = AccesoZonasT.CUT_COM == cut_com
             ind = calcular_indicador(filtro_com, session)
             # Toma el porcentaje (string) y lo parsea a float %
@@ -166,3 +167,4 @@ def obtener_indicador_zonas_frias(cut, session):
         resultados["desglose"] = calcular_indicador(filtro, session)
 
     return resultados
+

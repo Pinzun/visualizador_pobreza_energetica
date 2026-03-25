@@ -1,4 +1,4 @@
-// src/components/barchart.tsx
+// src/components/BarChart.tsx
 import React, { useMemo } from "react";
 import {
   BarChart,
@@ -12,43 +12,9 @@ import {
   Cell,
 } from "recharts";
 
-export type TipoEnergetico = {
-  red_electrica?: string;
-  generador?: string;
-  solar?: string;
-  eolica?: string;
-  otro?: string;
-  no_tiene?: string;
-  no_declara?: string;
-};
-
-type Props = {
-  dataTipo?: TipoEnergetico | null | undefined;
-  height?: number;
-  showZeros?: boolean;
-  unit?: string; // unidad real (p.ej. "viviendas")
-  yDivisor?: number; // escala visual (p.ej. 1000 => miles)
-  yLabel?: string; // etiqueta eje Y (p.ej. "Miles de viviendas")
-};
-
-const nf = new Intl.NumberFormat("es-CL");
-
-function parseCLInt(s?: string): number {
-  if (s === null || s === undefined) return 0;
-  const n = Number(String(s).replace(/\./g, "").replace(",", "."));
-  return Number.isFinite(n) ? n : 0;
-}
-
-const ORDER: (keyof TipoEnergetico)[] = [
-  "red_electrica",
-  "generador",
-  "solar",
-  "eolica",
-  "otro",
-  "no_tiene",
-  "no_declara",
-];
-const LABELS: Record<keyof TipoEnergetico, string> = {
+// Diccionario global de labels conocidos — se expande según nuevas claves
+const LABELS_CONOCIDOS: Record<string, string> = {
+  // Electricidad CENSO
   red_electrica: "Red eléctrica",
   generador: "Generador",
   solar: "Solar",
@@ -56,7 +22,37 @@ const LABELS: Record<keyof TipoEnergetico, string> = {
   otro: "Otro",
   no_tiene: "Sin acceso",
   no_declara: "No declara",
+  // Cocción / Calefacción CENSO
+  gas: "Gas",
+  lenia: "Leña",
+  carbon: "Carbón",
+  parafina: "Parafina",
+  pellet: "Pellet",
+  electricidad: "Electricidad",
+  // Cocción / Calefacción / ACS CASEN
+  gas_licuado: "Gas licuado",
+  gas_red: "Gas de red",
+  derivados_madera: "Der. madera",
+  parafina_petr: "Parafina/Petróleo",
+  no_usa: "No usa",
+  // Electricidad CASEN
+  generador_comunitario: "Gen. comunitario",
+  generador_propio: "Gen. propio",
+  red_med_compartido: "Red med. compartido",
+  red_med_propio: "Red med. propio",
+  red_publica_sin_medidor: "Red sin medidor",
+  red_publica_y_generador_compartido: "Red + gen. compartido",
+  red_publica_y_generador_propio: "Red + gen. propio",
+  // Habitabilidad
+  total_2000: "Antes 2000",
+  total_2000_2006: "2000–2006",
+  total_2007_2024: "2007–2024",
+  total_censo2024: "Total Censo 2024",
+  // Zonas térmicas
+  total_a: "Con brecha",
+  total_b: "Sin brecha",
 };
+
 const COLORS = [
   "#006FB3",
   "#FE6565",
@@ -65,7 +61,35 @@ const COLORS = [
   "#59A14F",
   "#EDC949",
   "#B07AA1",
+  "#FF9DA7",
+  "#9C755F",
+  "#BAB0AC",
 ];
+
+type Props = {
+  dataTipo?: Record<string, string | number> | null | undefined;
+  height?: number;
+  showZeros?: boolean;
+  unit?: string;
+  yDivisor?: number;
+  yLabel?: string;
+};
+
+const nf = new Intl.NumberFormat("es-CL");
+
+function parseCLNumber(s?: string | number): number {
+  if (s === null || s === undefined) return 0;
+  if (typeof s === "number") return s;
+  const n = Number(String(s).replace(/\./g, "").replace(",", "."));
+  return Number.isFinite(n) ? n : 0;
+}
+
+function labelFor(key: string): string {
+  if (LABELS_CONOCIDOS[key]) return LABELS_CONOCIDOS[key];
+  // Fallback: capitaliza y reemplaza guiones bajos
+  return key.replace(/_/g, " ").replace(/^\w/, (c) => c.toUpperCase());
+}
+
 const CommonBarChart: React.FC<Props> = ({
   dataTipo,
   height = 300,
@@ -75,23 +99,24 @@ const CommonBarChart: React.FC<Props> = ({
   yLabel = "Miles de viviendas",
 }) => {
   const { chartData, total } = useMemo(() => {
-    const src = dataTipo ?? {};
-    const rows = ORDER.map((k, i) => {
-      const raw = parseCLInt(src[k]);
+    if (!dataTipo) return { chartData: [], total: 0 };
+
+    const rows = Object.entries(dataTipo).map(([key, val], i) => {
+      const raw = parseCLNumber(val);
       return {
-        key: k,
-        name: LABELS[k],
-        valueRaw: raw, // valor real
-        valueScaled: yDivisor ? raw / yDivisor : raw, // valor para graficar
+        key,
+        name: labelFor(key),
+        valueRaw: raw,
+        valueScaled: yDivisor ? raw / yDivisor : raw,
         color: COLORS[i % COLORS.length],
       };
     });
+
     const filtered = showZeros ? rows : rows.filter((d) => d.valueRaw !== 0);
     const total = rows.reduce((acc, d) => acc + d.valueRaw, 0);
     return { chartData: filtered, total };
   }, [dataTipo, showZeros, yDivisor]);
 
-  // Leyenda custom “dentro” del gráfico (se renderiza en el wrapper de Recharts)
   const LegendContent: React.FC = () => (
     <div
       style={{
@@ -133,8 +158,8 @@ const CommonBarChart: React.FC<Props> = ({
     payload?: any[];
     label?: string;
   }) => {
-    if (!active || !payload || !payload.length) return null;
-    const p = payload[0]?.payload; // objeto del dato
+    if (!active || !payload?.length) return null;
+    const p = payload[0]?.payload;
     const raw = Number(p?.valueRaw || 0);
     const scaled = Number(p?.valueScaled || 0);
     const pct = total > 0 ? (raw / total) * 100 : 0;
@@ -209,16 +234,12 @@ const CommonBarChart: React.FC<Props> = ({
             }}
           />
           <Tooltip content={<TooltipContent />} />
-
-          {/* Leyenda colocada dentro del chart */}
           <RechartsLegend
             verticalAlign="bottom"
             align="center"
             height={30}
             content={<LegendContent />}
           />
-
-          {/* Graficamos el valor escalado */}
           <Bar dataKey="valueScaled" radius={[4, 4, 0, 0]}>
             {chartData.map((d) => (
               <Cell key={d.key} fill={d.color} />

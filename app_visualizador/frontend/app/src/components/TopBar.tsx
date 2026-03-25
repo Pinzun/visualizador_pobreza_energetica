@@ -56,63 +56,6 @@ const TopBar: React.FC<TopBarProps> = ({
         <div className="top-bar-center">
           <h1 className="page-title">{title}</h1>
         </div>
-
-        {!hideButtons && (
-          <div className="top-bar-right" ref={dropdownRef}>
-            <button
-              className="dropdown-toggle"
-              onClick={() => setOpen((v) => !v)}
-              aria-expanded={open}
-              aria-haspopup="menu"
-              aria-label="Abrir menú"
-              type="button"
-            >
-              Menú
-            </button>
-
-            {open && (
-              <ul className="dropdown-menu" role="menu" aria-label="Menú">
-                <li className="dropdown-item" role="none">
-                  <Link
-                    role="menuitem"
-                    to="/home"
-                    onClick={() => setOpen(false)}
-                  >
-                    Inicio
-                  </Link>
-                </li>
-                <li className="dropdown-item" role="none">
-                  <Link
-                    role="menuitem"
-                    to="/mapa"
-                    onClick={() => setOpen(false)}
-                  >
-                    Visualizador
-                  </Link>
-                </li>
-                <li className="dropdown-item" role="none">
-                  <Link
-                    role="menuitem"
-                    to="/manual"
-                    onClick={() => setOpen(false)}
-                  >
-                    Manual de Visor
-                  </Link>
-                </li>
-                {/* Deja/ajusta estas rutas si las usas */}
-                <li className="dropdown-item" role="none">
-                  <Link
-                    role="menuitem"
-                    to="/opcion1"
-                    onClick={() => setOpen(false)}
-                  >
-                    Cotiza
-                  </Link>
-                </li>
-              </ul>
-            )}
-          </div>
-        )}
       </div>
     </header>
   );

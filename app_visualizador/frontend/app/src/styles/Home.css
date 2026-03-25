@@ -63,15 +63,19 @@
    Variante Notas técnicas
 ================================ */
 .home-layout.home-layout--notas {
-  display: block;
+  display: grid;
+  grid-template-columns: 1fr 1fr; /* ← dos columnas iguales */
+  gap: var(--home-gap);
   padding: var(--home-pad);
   border: 1px solid #ccc;
   border-radius: 10px;
   min-height: 0;
+  overflow: hidden;
   background-color: #f9f9f9;
 }
 
 .nt-pane {
+  flex: 1 1 auto;
   min-height: 0;
   overflow: auto;
 }

@@ -1,4 +1,4 @@
-# services/habtiabilidad_frio.py
+﻿# services/habtiabilidad_frio.py
 from models import HabitabilidadFrio
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            calcular_colores_mapa, construir_leyenda_mapa)
@@ -26,11 +26,11 @@ CORTES = [
 
 # Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0–0,25%
-    "#c6dbef",  # 0,25–0,5%
-    "#6baed6",  # 0,5–0,75%
-    "#2171b5",  # 0,75–1%
-    "#08306b",  # ≥1%
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
 
 # ┌─────────────────────────────────┐
@@ -90,3 +90,5 @@ def obtener_indicador_frio(cut, session):
     # No habría desglose comunal, dado que los datos solo llegan al nivel de desagregación comunal
 
     return resultados
+
+

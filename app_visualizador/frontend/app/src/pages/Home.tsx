@@ -9,6 +9,7 @@ import useGeoData from "../hooks/useGeoData";
 import NotasTecnicas from "../components/NotasTecnicas";
 import Legend from "../components/Legend";
 import VideoPlayer from "../components/VideoPlayer";
+import ProgramasVPE from "../components/ProgramasVPE";
 
 const getRegionCode = (x: any): string =>
   x?.code ??
@@ -126,11 +127,17 @@ function Home() {
 
   const tabs = [
     { key: "mapa", label: "Visualizador" },
-    { key: "notas_tecnicas", label: "Notas técnicas" },
-    { key: "programas_disponibles", label: "Programas disponibles" },
+    { key: "notas_tecnicas", label: "Indicadores y programas" },
+    { key: "programas_disponibles", label: "Como usar el visualizador" },
   ] as const;
 
-  const handleTabChange = (key: string) => setTab(key as TabKey);
+  const handleTabChange = (key: string) => {
+    if (key === "programas_disponibles") {
+      setShowVideoModal(true);
+    } else {
+      setTab(key as TabKey);
+    }
+  };
   const currentCut = selectedComuna || selectedRegion || undefined;
   const bloquearSelectores =
     indicator !== null && INDICADORES_ASEQUIBILIDAD.includes(indicator);
@@ -203,26 +210,6 @@ function Home() {
       {/* ── Tab: Visualizador ── */}
       {tab === "mapa" && (
         <div className="home-layout">
-          {/* Botón discreto para reabrir el video */}
-          <button
-            onClick={() => setShowVideoModal(true)}
-            style={{
-              position: "absolute",
-              top: 8,
-              right: 8,
-              background: "none",
-              border: "1px solid #ccc",
-              borderRadius: 6,
-              padding: "4px 10px",
-              fontSize: 12,
-              color: "#666",
-              cursor: "pointer",
-              zIndex: 10,
-            }}
-          >
-            ▶ ¿Qué es la pobreza energética?
-          </button>
-
           {/* Columna izquierda */}
           <div className="left-col">
             <div className="select-box">
@@ -342,6 +329,9 @@ function Home() {
         <div className="home-layout home-layout--notas">
           <div className="nt-pane">
             <NotasTecnicas />
+          </div>
+          <div className="nt-pane">
+            <ProgramasVPE />
           </div>
         </div>
       )}

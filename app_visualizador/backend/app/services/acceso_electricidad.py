@@ -1,4 +1,4 @@
-# services/acceso_electricidad.py
+﻿# services/acceso_electricidad.py
 from models import (AccesoCenso, Casen, CasenComunaProvincia, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            construir_leyenda_mapa, calcular_colores_mapa)
@@ -35,11 +35,11 @@ CORTES = [
 
 # Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0–0,25%
-    "#c6dbef",  # 0,25–0,5%
-    "#6baed6",  # 0,5–0,75%
-    "#2171b5",  # 0,75–1%
-    "#08306b",  # ≥1%
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
 
 # ┌─────────────────────────────────────────┐
@@ -125,7 +125,7 @@ def obtener_acceso_electricidad_casen(cut, session):
             # Toma el porcentaje (string) y lo parsea a float %
             porcentajes_por_region[cod] = formato_chileno_prom(ind.get("porcentaje"))
 
-        resultados["tipo_energetico"] = acceso_tipo_electricidad_casen(filtro_nacional, session)
+        resultados["tipo"] = acceso_tipo_electricidad_casen(filtro_nacional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_nacional, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_region, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
@@ -153,7 +153,7 @@ def obtener_acceso_electricidad_casen(cut, session):
             indicadores = calcular_indicadores_casen(filtro_com, session)
             porcentajes_por_comuna[str(cut_com)] = formato_chileno_prom(indicadores.get("porcentaje"))
 
-        resultados["tipo_energetico"] = acceso_tipo_electricidad_casen(filtro_regional, session)
+        resultados["tipo"] = acceso_tipo_electricidad_casen(filtro_regional, session)
         resultados["desglose"] = calcular_indicadores_casen(filtro_regional, session)
         resultados["colores_mapa"] = calcular_colores_mapa(porcentajes_por_comuna, CORTES, PALETA)
         resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
@@ -273,3 +273,4 @@ def obtener_acceso_electricidad_censo(cut, session):
         resultados["desglose"] = calcular_indicadores_censo(filtro_comunal, session)
 
     return resultados
+

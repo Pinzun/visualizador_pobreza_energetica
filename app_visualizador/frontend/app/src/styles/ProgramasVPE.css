@@ -1,7 +1,7 @@
-/* src/styles/NotasTecnicas.css */
+/* src/styles/ProgramasVPE.css */
 
 /* ─── Layout principal ─────────────────────────────── */
-.notas-tecnicas {
+.programas-vpe {
   max-width: 860px;
   margin: 0 auto;
   padding: 20px;
@@ -13,11 +13,11 @@
 }
 
 /* ─── Header ───────────────────────────────────────── */
-.nt-header {
+.vpe-header {
   margin-bottom: 20px;
 }
 
-.nt-header__supra {
+.vpe-header__supra {
   font-size: 11px;
   letter-spacing: 0.1em;
   text-transform: uppercase;
@@ -25,7 +25,7 @@
   margin: 0 0 6px;
 }
 
-.nt-header h1 {
+.vpe-header h1 {
   font-size: 33px;
   font-weight: 700;
   color: #1a1a2e;
@@ -33,26 +33,22 @@
   line-height: 1.3;
 }
 
-.nt-lead {
+.vpe-lead {
   font-size: 13.5px;
   color: #666;
   line-height: 1.65;
   margin: 0;
 }
 
-/* ─── Tabs de dimensión ────────────────────────────── */
-.nt-tabs {
+/* ─── Tabs de tipo ─────────────────────────────────── */
+.vpe-tabs {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
   margin-bottom: 16px;
 }
 
-.nt-tab__nombre {
-  font-size: 22px;
-}
-
-.nt-tab {
+.vpe-tab {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -70,27 +66,31 @@
     color 0.15s;
 }
 
-.nt-tab:hover {
+.vpe-tab:hover {
   background: #e0e0e0;
 }
 
-.nt-tab--activa {
+.vpe-tab--activo {
   background: #fe6565;
   color: #fff;
   font-weight: 600;
 }
 
-.nt-tab:focus-visible {
+.vpe-tab:focus-visible {
   outline: 2px solid #fe6565;
   outline-offset: 2px;
 }
 
-.nt-tab__icono {
+.vpe-tab__icono {
   font-size: 14px;
   line-height: 1;
 }
 
-.nt-tab__count {
+.vpe-tab__nombre {
+  font-size: 22px;
+}
+
+.vpe-tab__count {
   font-size: 11px;
   padding: 1px 7px;
   border-radius: 20px;
@@ -98,19 +98,19 @@
   line-height: 1.6;
 }
 
-.nt-tab:not(.nt-tab--activa) .nt-tab__count {
+.vpe-tab:not(.vpe-tab--activo) .vpe-tab__count {
   background: #ddd;
   color: #555;
 }
 
 /* ─── Panel activo ─────────────────────────────────── */
-.nt-panel {
+.vpe-panel {
   display: flex;
   flex-direction: column;
   gap: 8px;
 }
 
-.nt-panel__cabecera {
+.vpe-panel__cabecera {
   display: flex;
   align-items: center;
   gap: 10px;
@@ -121,27 +121,27 @@
   margin-bottom: 4px;
 }
 
-.nt-panel__icono {
+.vpe-panel__icono {
   font-size: 30px;
   line-height: 1;
 }
 
-.nt-panel__cabecera strong {
+.vpe-panel__cabecera strong {
   display: block;
   font-size: 30px;
   color: #333;
   font-weight: 700;
 }
 
-.nt-panel__subtitulo {
+.vpe-panel__subtitulo {
   display: block;
   font-size: 20px;
   color: #777;
   margin-top: 2px;
 }
 
-/* ─── Tarjeta de indicador ─────────────────────────── */
-.nt-card-indicador {
+/* ─── Tarjeta de iniciativa ────────────────────────── */
+.vpe-card {
   border: 1px solid #e5e7eb;
   border-radius: 8px;
   overflow: hidden;
@@ -150,11 +150,11 @@
   transition: box-shadow 0.2s;
 }
 
-.nt-card-indicador--open {
+.vpe-card--open {
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
-.nt-card-indicador__header {
+.vpe-card__header {
   width: 100%;
   display: flex;
   align-items: center;
@@ -168,35 +168,30 @@
   transition: background 0.15s;
 }
 
-.nt-card-indicador--open .nt-card-indicador__header,
-.nt-card-indicador__header:hover {
+.vpe-card--open .vpe-card__header,
+.vpe-card__header:hover {
   background: #f9f9f9;
 }
 
-.nt-card-indicador__header-text {
+.vpe-card__header-text {
   flex: 1;
   display: flex;
   flex-direction: column;
   gap: 3px;
 }
 
-.nt-card-indicador__nombre {
+.vpe-card__nombre {
   font-size: 20px;
   font-weight: 600;
   color: #2c2c2c;
   line-height: 1.4;
 }
 
-.nt-card-indicador--open .nt-card-indicador__nombre {
-  color: #333;
+.vpe-card--open .vpe-card__nombre {
+  color: #fe6565;
 }
 
-.nt-card-indicador__fuente {
-  font-size: 11px;
-  color: #999;
-}
-
-.nt-card-indicador__chevron {
+.vpe-card__chevron {
   width: 24px;
   height: 24px;
   border-radius: 50%;
@@ -213,14 +208,14 @@
     transform 0.2s;
 }
 
-.nt-card-indicador__chevron--open {
+.vpe-card__chevron--open {
   background: #555;
   color: #fff;
   transform: rotate(180deg);
 }
 
-/* ─── Body de la ficha ─────────────────────────────── */
-.nt-card-indicador__body {
+/* ─── Body de la tarjeta ───────────────────────────── */
+.vpe-card__body {
   padding: 16px;
   border-top: 1px solid #e5e7eb;
   background: #fafafa;
@@ -230,13 +225,13 @@
 }
 
 /* ─── Campos ───────────────────────────────────────── */
-.nt-ficha-campo {
+.vpe-ficha-campo {
   display: flex;
   flex-direction: column;
   gap: 4px;
 }
 
-.nt-ficha-label {
+.vpe-ficha-label {
   font-size: 10.5px;
   font-weight: 700;
   letter-spacing: 0.08em;
@@ -244,96 +239,39 @@
   color: #aaa;
 }
 
-.nt-ficha-texto {
+.vpe-ficha-texto {
   font-size: 13.5px;
   color: #3a3a3a;
   line-height: 1.65;
   margin: 0;
 }
 
-.nt-ficha-texto--muted {
+.vpe-ficha-texto--muted {
   color: #666;
   font-size: 13px;
 }
 
-/* ─── Badges de escala ─────────────────────────────── */
-.nt-badges {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 5px;
-}
-
-.nt-badge {
-  font-size: 11px;
-  font-weight: 600;
-  padding: 2px 9px;
-  border-radius: 20px;
-  background: #f0f0f0;
-  color: #555;
-  border: 1px solid #ccc;
-}
-
-/* ─── Lista de metodología ─────────────────────────── */
-.nt-metodologia-lista {
-  margin: 0;
-  padding-left: 20px;
-  font-size: 13.5px;
-  color: #3a3a3a;
-  line-height: 1.65;
-  display: flex;
-  flex-direction: column;
-  gap: 5px;
-}
-
-/* ─── Fórmula ──────────────────────────────────────── */
-.nt-formula {
-  display: block;
-  font-family: "Courier New", monospace;
+/* ─── Enlace ───────────────────────────────────────── */
+.vpe-link {
   font-size: 13px;
-  color: #333;
-  line-height: 1.6;
-  white-space: pre-wrap;
-  word-break: break-word;
-  background: #f0f2f5;
-  border: 1px solid #ccc;
-  border-left: 3px solid #555;
-  border-radius: 4px;
-  padding: 10px 14px;
+  color: #fe6565;
+  word-break: break-all;
+  text-decoration: none;
 }
 
-/* ─── Comentario ───────────────────────────────────── */
-.nt-comentario {
-  display: flex;
-  gap: 8px;
-  align-items: flex-start;
-  background: #f9f9f9;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  padding: 10px 12px;
-}
-
-.nt-comentario__icono {
-  font-size: 14px;
-  flex-shrink: 0;
-  line-height: 1.5;
-}
-
-.nt-comentario p {
-  margin: 0;
-  font-size: 12.5px;
-  color: #555;
-  line-height: 1.6;
+.vpe-link:hover {
+  text-decoration: underline;
 }
 
 /* ─── Footer ───────────────────────────────────────── */
-.nt-footer {
+.vpe-footer {
   margin-top: 32px;
   padding-top: 14px;
   border-top: 1px solid #e0e0e0;
   text-align: center;
 }
 
-.nt-footer p {
+.vpe-footer p {
   font-size: 11px;
   color: #bbb;
   margin: 0 0 3px;
@@ -342,20 +280,20 @@
 
 /* ─── Responsive ───────────────────────────────────── */
 @media (max-width: 600px) {
-  .notas-tecnicas {
+  .programas-vpe {
     padding: 16px 12px 40px;
   }
 
-  .nt-header h1 {
-    font-size: 32px;
+  .vpe-header h1 {
+    font-size: 20px;
   }
 
-  .nt-tab {
+  .vpe-tab {
     padding: 6px 10px;
     font-size: 12px;
   }
 
-  .nt-card-indicador__header {
+  .vpe-card__header {
     padding: 10px 12px;
   }
 }

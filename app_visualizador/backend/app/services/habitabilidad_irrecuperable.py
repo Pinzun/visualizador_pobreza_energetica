@@ -1,4 +1,4 @@
-# services/habitabilidad_irrecuperable.py
+﻿# services/habitabilidad_irrecuperable.py
 from collections import defaultdict
 from models import (HabitabilidadCenso, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
@@ -36,11 +36,11 @@ CORTES = [
 
 # Paleta de colores para el mapa
 PALETA = [
-    "#f7fbff",  # 0.00 - 0.25
-    "#c6dbef",  # 0.25 - 0.50
-    "#6baed6",  # 0.50 - 0.75
-    "#2171b5",  # 0.75 - 1.00
-    "#08306b",  # 1.00 - 100.00
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
 
 # ┌───────────────────────────────────────┐
@@ -118,3 +118,4 @@ def obtener_habitabilidad_irrecuperables(cut, session):
         resultados["desglose"] = calcular_indicadores_censo(filtro, session)
 
     return resultados
+

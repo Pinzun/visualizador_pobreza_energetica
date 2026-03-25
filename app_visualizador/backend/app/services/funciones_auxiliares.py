@@ -1,4 +1,4 @@
-# services/funciones_auxiliares.py
+﻿# services/funciones_auxiliares.py
 
 # A la fecha: 30-09-2025
 # Información de contexto (modificar tras cambios, mantener indicadores actualizados):
@@ -40,7 +40,9 @@ def _asigna_color_por_bins(valor_pct, CORTES, PALETA):
     for i, (mn, mx) in enumerate(CORTES):
         if (valor_pct >= mn) and (valor_pct < mx or mx == CORTES[-1][1]):
             return PALETA[i]
-    return PALETA[-1]  # Retorna el último color si no se encuentra un bin.
+    return PALETA[-1]
+
+# Retorna el último color si no se encuentra un bin.
 
 # Entrega los colores del mapa utilizados en el frontend.
 def calcular_colores_mapa(dict_porcentajes, CORTES, PALETA):
@@ -75,5 +77,30 @@ def construir_leyenda_mapa(titulo, CORTES, PALETA):
         "unidad": "%",
         "tipo": "discreto",
         "formato_tooltip": "{valor:.2f}%",
+        "bins": bins,
+    }
+
+
+def construir_leyenda_macrozona(titulo, PALETA):
+    nombres_macrozonas = [
+        "Macrozona Norte",
+        "Macrozona Metropolitana",
+        "Macrozona Centro",
+        "Macrozona Sur",
+    ]
+
+    bins = []
+    for i, nombre in enumerate(nombres_macrozonas):
+        bins.append({
+            "min": i + 1,
+            "max": i + 1,
+            "label": nombre,
+            "color": PALETA[i],
+        })
+
+    return {
+        "titulo": titulo,
+        "nota": "Categorias de macrozona.",
+        "tipo": "discreto",
         "bins": bins,
     }

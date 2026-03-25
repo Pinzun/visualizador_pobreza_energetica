@@ -1,4 +1,4 @@
-# services/calidad_saidi.py
+﻿# services/calidad_saidi.py
 from collections import defaultdict
 from models import CalidadSaidi
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
@@ -24,22 +24,22 @@ titulo = "Duración de interrupciones del servicio eléctrico (horas/año)"
 
 # Datos de corte del mapa (en horas).
 CORTES = [
-    (0.00, 10.00),
-    (10.00, 20.00),
-    (20.00, 30.00),
-    (30.00, 40.00),
-    (40.00, 500.00),  # abierto
+    (0.00, 0.50),
+    (0.50, 0.75),
+    (0.75, 1.00),
+    (1.00, 1.25),
+    (1.25, 500.00),  # abierto
 ]
 
 # Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0.00 - 0.25
-    "#c6dbef",  # 0.25 - 0.50
-    "#6baed6",  # 0.50 - 0.75
-    "#2171b5",  # 0.75 - 1.00
-    "#08306b",  # 1.00 - 100.00
-    
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
+
 def _calcular_saidi_datos_anuales(agrupacion_anio_comuna: dict) -> list[dict]:
     """Calcula los datos anuales de SAIDI a partir de una agrupación por año y comuna."""
     resultados = []
@@ -174,7 +174,7 @@ def obtener_saidi_sin_fm(cut: int | str | None) -> dict:
         # Cálculo comunal.
         registros_saidi = [r for r in campos_saidi if r.CUT_COM == cut]
 
-    # Si no hay registros, retornar estructura vacía.
+# Si no hay registros, retornar estructura vacía.
     if not registros_saidi:
         return {"desglose_calidad_saidi": {}}
 
@@ -232,5 +232,7 @@ def obtener_saidi_sin_fm(cut: int | str | None) -> dict:
         "leyenda_mapa": construir_leyenda_mapa(titulo, CORTES, PALETA),
         resultado_key : datos_fmt,
     }
+
+
 
 

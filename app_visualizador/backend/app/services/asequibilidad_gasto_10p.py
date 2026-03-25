@@ -1,10 +1,10 @@
-# services/asequibilidad_gasto_10p.py
+﻿# services/asequibilidad_gasto_10p.py
 from models import AsequibilidadData
 from services.funciones_auxiliares import (
 	formato_chileno,
 	formato_chileno_prom,
 	calcular_colores_mapa,
-	construir_leyenda_mapa,
+	construir_leyenda_macrozona,
 )
 
 # Cambios registrados a la fecha: 04-02-2026
@@ -16,7 +16,7 @@ from services.funciones_auxiliares import (
 # Datos modificables para la configuración base acorde a los despliegues de cada indicador.
 
 # Título del indicador.
-titulo = "División de regiones por macrozona ()"
+titulo = "Division de regiones por macrozona"
 
 # Datos de corte del mapa. A diferencia de otros indicadores, estos cortes identifican la macrozona
 # cada valor, y no un  rango de valores.
@@ -32,10 +32,10 @@ CORTES = [
 
 # Paleta de colores para el mapa.
 PALETA = [
-	"#fee5d9",  # Macrozona Norte
-	"#fcae91",  # Macrozona Metropolitana
-	"#fb6a4a",  # Macrozona Centro
-	"#cb181d",  # Macrozona Sur
+    "#e41a1c",  # Macrozona Norte
+    "#ffd92f",  # Macrozona Metropolitana
+    "#8ecae6",  # Macrozona Centro
+    "#b8e186",  # Macrozona Sur
 ]
 
 # ┌─────────────────────────────────┐
@@ -111,8 +111,11 @@ def obtener_indicador_gasto_10p(filtro, session):
 	# Calcular colores del mapa usando los valores de macrozona (1-4)
 	colores_mapa = calcular_colores_mapa(dict_cut_reg_colors, CORTES, PALETA)
 
-	resultados["leyenda_mapa"] = construir_leyenda_mapa(titulo, CORTES, PALETA)
+	resultados["leyenda_mapa"] = construir_leyenda_macrozona(titulo, PALETA)
+	resultados["colores_mapa"] = colores_mapa
 	resultados["colores"] = colores_mapa
 	resultados["desglose"] = tabla_valores
 
 	return resultados
+
+

@@ -1,4 +1,4 @@
-# services/calidad_coccion.py
+﻿# services/calidad_coccion.py
 from models import (CalidadCenso, Casen, CasenComunaProvincia, ConfigFuentes)
 from services.funciones_auxiliares import (formato_chileno, formato_chileno_prom,
                                            calcular_colores_mapa, construir_leyenda_mapa)
@@ -27,20 +27,20 @@ titulo = "% de combustibles contaminantes utilizados por vivienda"
 
 # Datos de corte del mapa.
 CORTES = [
-    (0.00, 0.25),
-    (0.25, 0.50),
-    (0.50, 0.75),
-    (0.75, 1.00),
-    (1.00, 100.00),  # abierto
+    (0.00, 25.00),
+    (25.00, 50.00),
+    (50.00, 75.00),
+    (75.00, 100.00),
+    (100.00, 100.00),  # abierto
 ]
 
 # Paleta de colores para el mapa.
 PALETA = [
-    "#f7fbff",  # 0–0,25%
-    "#c6dbef",  # 0,25–0,5%
-    "#6baed6",  # 0,5–0,75%
-    "#2171b5",  # 0,75–1%
-    "#08306b",  # ≥1%
+    "#deebf7",  # valores bajos
+    "#9ecae1",
+    "#fcbba1",
+    "#fb6a4a",
+    "#cb181d",  # valores altos
 ]
 
 # ┌─────────────────────────────────────────┐
@@ -137,7 +137,8 @@ def obtener_calidad_coccion_casen(cut, session):
         for reg in regiones:
             # Se obtiene el código de la región.
             cut_reg = reg[0]
-            # Se aplica el filtro por CUT.
+
+# Se aplica el filtro por CUT.
             filtro = Casen.CUT_REG == cut_reg
             # Se aglutinan los datos para el mapa de calor a nivel nacional.
             ind = calcular_indicadores_casen(filtro, session)
@@ -167,8 +168,8 @@ def obtener_calidad_coccion_casen(cut, session):
             Casen.CUT_REG == int(cut)
         ).all()
         folios_lista = [f[0] for f in folios_region]
-        
-        # Query de segunda base (CasenComunaProvincia):
+
+# Query de segunda base (CasenComunaProvincia):
         folios_comunas = session.query(
             # Query en base a "cut" comunal y folio.
              CasenComunaProvincia.FOLIO,
@@ -340,3 +341,5 @@ def obtener_calidad_coccion_censo(cut, session):
         resultados["desglose"] = calcular_indicadores_censo(filtro, session)
     
     return resultados
+
+

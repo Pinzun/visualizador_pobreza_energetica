@@ -1,5 +1,6 @@
 // src/pages/Home.tsx
 import { useEffect, useMemo, useState } from "react";
+import "../styles/Home.css";
 import TabSelector from "../components/TabSelector";
 import MapView from "../components/MapView";
 import InfoPanel from "../components/InfoPanel";

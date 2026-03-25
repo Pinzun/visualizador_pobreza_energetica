@@ -1,11 +1,18 @@
-/* src/styles/public-shell.css */
+/* ================================
+   PublicShell — layout principal (header + contenido)
+================================ */
+.app-shell,
+.home-shell,
 .public-shell {
   display: grid;
-  grid-template-rows: 56px 1fr;
+  grid-template-rows: var(--topbar-h) 1fr;
   height: 100vh;
 }
 
-.public-content {
-  position: relative;
+.app-content,
+.public-content,
+.home-content {
+  min-height: 0;
   overflow: hidden;
+  position: relative;
 }

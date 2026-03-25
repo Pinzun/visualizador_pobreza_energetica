@@ -1,5 +1,6 @@
 // src/components/TopBar.tsx
 import React, { useState, useRef, useEffect } from "react";
+import "../styles/TopBar.css";
 import { Link } from "react-router-dom";
 
 interface TopBarProps {

@@ -4,8 +4,6 @@ import { Suspense, lazy } from "react";
 import { LoadingProvider } from "./context/LoadingContext";
 import PublicShell from "./layouts/PublicShell";
 import "leaflet/dist/leaflet.css";
-import "./styles/public-shell.css";
-import "./styles/loading.css";
 
 const Home = lazy(() => import("./pages/Home")); // pesado
 

@@ -1,4 +1,5 @@
 // src/components/NotasTecnicas.tsx
+import "../styles/NotasTecnicas.css";
 
 function NotasTecnicas() {
   return (

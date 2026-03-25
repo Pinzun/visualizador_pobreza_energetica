@@ -1,4 +1,5 @@
 // src/components/TabSelector.tsx
+import "../styles/TabSelector.css";
 
 type TabItem = { key: string; label: string };
 

@@ -1,5 +1,6 @@
 // src/layouts/PublicShell.tsx
 import TopBar from "../components/TopBar";
+import "../styles/public-shell.css";
 import LoadingOverlay from "../components/LoadingOverlay";
 
 export default function PublicShell({

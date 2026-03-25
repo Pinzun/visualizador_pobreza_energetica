@@ -1,0 +1,102 @@
+/* ================================
+   TopBar
+================================ */
+.top-bar {
+  width: 100%;
+  min-height: var(--topbar-h);
+  background: #1f3b73;
+  border-bottom: 1px solid #1f3b73;
+  display: flex;
+  align-items: center;
+  box-sizing: border-box;
+}
+
+.top-bar__inner {
+  flex: 1;
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 0 var(--layout-pad);
+  display: grid;
+  grid-template-columns: 20% 1fr 20%;
+  align-items: center;
+  gap: 12px;
+  box-sizing: border-box;
+}
+
+.top-bar-left,
+.top-bar-center,
+.top-bar-right {
+  min-width: 0;
+  display: flex;
+  align-items: center;
+}
+.top-bar-center {
+  justify-content: center;
+}
+.top-bar-right {
+  justify-content: flex-end;
+  position: relative;
+}
+
+.page-title {
+  font-family:
+    "Nagel",
+    system-ui,
+    -apple-system,
+    Segoe UI,
+    Roboto,
+    sans-serif;
+  font-size: clamp(18px, calc(var(--topbar-h) * 0.36), 34px);
+  font-weight: 700;
+  margin: 0;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.logo {
+  height: clamp(40px, calc(var(--topbar-h) * 0.95), 140px);
+  width: auto;
+  cursor: pointer;
+}
+
+.dropdown-toggle {
+  background: none;
+  border: none;
+  font: inherit;
+  font-weight: 600;
+  font-size: clamp(14px, calc(var(--topbar-h) * 0.2), 18px);
+  cursor: pointer;
+  color: #fff;
+}
+.dropdown-menu {
+  position: absolute;
+  right: 0;
+  top: calc(100% + 0.5rem);
+  background: #058df3;
+  color: #fff;
+  border: 1px solid #003b64;
+  border-radius: 4px;
+  padding: 0.25rem 0;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  z-index: 1000;
+  list-style: none;
+}
+.dropdown-item {
+  padding: 0.5rem 1rem;
+}
+.dropdown-item a {
+  text-decoration: none;
+  color: inherit;
+  display: block;
+}
+
+@media (max-width: 768px) {
+  .top-bar__inner {
+    grid-template-columns: 1fr auto;
+  }
+  .top-bar-left {
+    display: none;
+  }
+}

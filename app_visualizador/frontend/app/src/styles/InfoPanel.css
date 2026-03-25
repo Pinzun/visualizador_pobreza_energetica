@@ -1,0 +1,120 @@
+/* ================================
+   InfoPanel
+================================ */
+.info-panel {
+  width: 100%;
+  height: 100%;
+  margin-left: 40px;
+  display: flex;
+  flex-direction: column;
+  gap: 15px;
+  min-width: 250px;
+}
+
+.info-box {
+  width: 95%;
+  margin-bottom: 12px;
+  padding: 15px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+}
+.info-box--expand {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+}
+.info-box--acceso {
+  min-height: 300px;
+}
+
+/* Variante del selector de pestañas dentro del InfoPanel */
+.info-box.tabselector {
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  width: 37%;
+}
+
+/* ================================
+   Selector de indicador administrativo
+================================ */
+.administrative-select {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 16px;
+}
+.administrative-select select {
+  padding: 6px 12px;
+  border-radius: 6px;
+  border: 1px solid #ccc;
+  font-size: 14px;
+  background-color: #fff;
+  cursor: pointer;
+}
+
+/* ================================
+   Fila de visualizaciones (Pie + Barras)
+================================ */
+.viz-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+  align-items: start;
+  margin-top: 12px;
+}
+.viz-card {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 12px;
+  display: flex;
+  flex-direction: column;
+  min-height: 280px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+.viz-title {
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+.pie-acceso {
+  display: flex;
+  justify-content: flex-start;
+  align-items: center;
+  width: 100%;
+}
+.bar-wrapper {
+  position: relative;
+  width: 100%;
+  height: 250px;
+  overflow: visible;
+}
+
+/* ================================
+   Utilidades de layout interno
+================================ */
+.tabs-bar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+.tabs-bar__spacer {
+  flex: 1;
+}
+.split-2 {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 16px;
+}
+.split-2__col {
+  flex: 1;
+  min-width: 0;
+}
+
+@media (max-width: 900px) {
+  .viz-row {
+    grid-template-columns: 1fr;
+  }
+}

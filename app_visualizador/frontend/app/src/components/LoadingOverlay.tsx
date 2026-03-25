@@ -1,5 +1,6 @@
 // src/components/LoadingOverlay.tsx
 import { useGlobalLoading } from "../context/LoadingContext";
+import "../styles/loading.css";
 export default function LoadingOverlay() {
   const { loading, progress, message } = useGlobalLoading();
   if (!loading) return null;

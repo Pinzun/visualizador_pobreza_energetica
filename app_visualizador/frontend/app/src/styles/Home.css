@@ -1,37 +1,19 @@
 /* ================================
-   Home Layout Styles (responsive %)
-   src/styles/Home.css
+   Home — wrapper y layout principal
 ================================ */
-
-/* Variables “de diseño” para ajustar proporciones */
-:root {
-  --home-gap: 20px;
-  --home-pad: 20px;
-
-  /* proporción de columnas (izq:der) en desktop */
-  --left-col-w: 58%;
-  --right-col-w: 42%;
-
-  /* altura mínima del mapa (evita que se comprima demasiado) */
-  --map-min: clamp(300px, 35vh, 560px);
-}
-
-/* Contenedor principal: ocupa TODO el alto disponible del main */
 .home-wrapper {
   width: 100%;
   max-width: 2200px;
   margin: 0 auto;
   padding: var(--home-pad);
   box-sizing: border-box;
-
-  height: 100%; /* ← coincide con .app-content (100vh - topbar) */
-  min-height: 0; /* ← vital en grid/flex para no empujar al header */
+  height: 100%;
+  min-height: 0;
   display: flex;
   flex-direction: column;
   gap: var(--home-gap);
 }
 
-/* Layout principal (dos columnas) sin alturas absolutas */
 .home-layout {
   display: grid;
   grid-template-columns:
@@ -43,22 +25,21 @@
   border: 1px solid #ccc;
   border-radius: 10px;
   box-sizing: border-box;
-
-  /* Ocupar el alto disponible del wrapper */
   flex: 1 1 auto;
-  min-height: 0; /* ← permite que los hijos manejen su overflow */
+  min-height: 0;
 }
 
-/* Columna izquierda: selects arriba + mapa ocupa el resto */
+/* ================================
+   Columnas del layout
+================================ */
 .left-col {
   display: grid;
-  grid-template-rows: auto 1fr; /* selects (alto auto) + mapa (resto) */
+  grid-template-rows: auto 1fr;
   min-width: 480px;
-  min-height: 0; /* ← evita overflow forzado */
+  min-height: 0;
   gap: 12px;
 }
 
-/* Barra de selects (alto auto) */
 .select-box {
   display: flex;
   flex-wrap: wrap;
@@ -66,64 +47,72 @@
   align-items: center;
 }
 
-/* El mapa llena el espacio disponible de la izquierda */
 .map-slot {
-  min-height: var(--map-min); /* seguridad en pantallas bajas */
-  min-width: 0; /* ← evita overflow horizontal */
+  min-height: var(--map-min);
+  min-width: 0;
   display: flex;
 }
 
-/* Columna derecha: panel ocupa su celda */
 .info-slot {
   min-width: 380px;
-  min-height: 0; /* ← importante para scroll interno si aplica */
+  min-height: 0;
   overflow: visible;
 }
 
-/* Selects */
-.administrative-select {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-top: 1px;
-  margin-bottom: 16px;
-}
-
-.administrative-select select {
-  padding: 6px 12px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
-  font-size: 14px;
-  background-color: #fff;
-  cursor: pointer;
-}
-
-/* Notas técnicas: usa todo el alto restante */
-.home-layout--notas {
-  display: block !important;
-  grid-template-columns: 1fr;
-  grid-auto-rows: 1fr; /* todo lo que haya dentro ocupa el alto disponible */
+/* ================================
+   Variante Notas técnicas
+================================ */
+.home-layout.home-layout--notas {
+  display: block;
   padding: var(--home-pad);
   border: 1px solid #ccc;
   border-radius: 10px;
   min-height: 0;
+  background-color: #f9f9f9;
 }
 
 .nt-pane {
-  width: 100%;
-  box-sizing: border-box;
   min-height: 0;
   overflow: auto;
 }
 
-/* Responsive simple */
+/* ================================
+   Selector de tabs principal (Home level)
+================================ */
+.info-box.tabselector2 {
+  margin-bottom: 12px;
+  padding: 8px;
+  border: 1px solid #ccc;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  width: 40%;
+}
+
+/* ================================
+   Video player
+================================ */
+.video-16x9 {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  margin-top: 20px;
+}
+.video-16x9 video {
+  width: 70%;
+  aspect-ratio: 16 / 9;
+  height: auto;
+  max-height: 70vh;
+  border-radius: 8px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+}
+
+/* ================================
+   Responsive
+================================ */
 @media (max-width: 1200px) {
-  :root {
-    --left-col-w: 100%;
-    --right-col-w: 100%;
-  }
   .home-layout {
-    grid-template-columns: 1fr; /* apila columnas */
+    grid-template-columns: 1fr;
   }
   .left-col,
   .info-slot {

@@ -1,5 +1,6 @@
 // src/components/InfoPanel.tsx
 import { useEffect, useMemo, useRef, useState } from "react";
+import "../styles/InfoPanel.css";
 import TabSelector from "./TabSelector";
 import PieAcceso from "./PieAcceso";
 import CommonBarChart from "./BarChart";

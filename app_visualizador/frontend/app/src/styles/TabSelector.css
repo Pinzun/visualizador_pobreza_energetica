@@ -1,0 +1,27 @@
+/* ================================
+   TabSelector
+================================ */
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.tab-btn {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+}
+.tab-btn--active {
+  background-color: #fe6565;
+  color: #fff;
+}
+.tab-btn--inactive {
+  background-color: #eeeeee;
+  color: #000;
+}
+.tab-btn:focus-visible {
+  outline: 2px solid #fe6565;
+  outline-offset: 2px;
+}

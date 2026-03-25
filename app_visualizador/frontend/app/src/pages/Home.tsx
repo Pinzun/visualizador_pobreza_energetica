@@ -185,7 +185,7 @@ function Home() {
               ×
             </button>
             <h3 style={{ marginTop: 0, marginBottom: 16, fontSize: 16 }}>
-              ¿Qué es la pobreza energética?
+              Como usar el visualizador
             </h3>
             <VideoPlayer
               src="/video/video_pe.mp4"

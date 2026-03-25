@@ -10,7 +10,6 @@ interface TopBarProps {
 
 const TopBar: React.FC<TopBarProps> = ({
   title = "Visualizador Pobreza Energética",
-  hideButtons = false,
 }) => {
   const [open, setOpen] = useState(false);
   const dropdownRef = useRef<HTMLDivElement>(null);
@@ -45,7 +44,7 @@ const TopBar: React.FC<TopBarProps> = ({
         <div className="top-bar-left">
           <Link to="/home" aria-label="Ir al inicio">
             <img
-              src="/logo_energia.svg"
+              src="/logo_energia.png"
               alt="Ministerio de Energía"
               className="logo"
               style={{ cursor: "pointer" }}

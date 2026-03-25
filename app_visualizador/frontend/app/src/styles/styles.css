@@ -1,4 +1,73 @@
 /* ================================
+   Fuentes Gobierno de Chile
+================================ */
+@font-face {
+  font-family: "gobCL";
+  src: url("/fonts/gobCL_Light.otf") format("opentype");
+  font-weight: 300;
+}
+
+@font-face {
+  font-family: "gobCL";
+  src: url("/fonts/gobCL_Regular.otf") format("opentype");
+  font-weight: 400;
+}
+
+@font-face {
+  font-family: "gobCL";
+  src: url("/fonts/gobCL_Bold.otf") format("opentype");
+  font-weight: 700;
+}
+
+@font-face {
+  font-family: "gobCL";
+  src: url("/fonts/gobCL_Heavy.otf") format("opentype");
+  font-weight: 900;
+}
+
+@font-face {
+  font-family: "MuseoSans";
+  src: url("/fonts/MuseoSans-300.otf") format("opentype");
+  font-weight: 300;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MuseoSans";
+  src: url("/fonts/MuseoSans-300Italic.otf") format("opentype");
+  font-weight: 300;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "MuseoSans";
+  src: url("/fonts/MuseoSans_500.otf") format("opentype");
+  font-weight: 500;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MuseoSans";
+  src: url("/fonts/MuseoSans_500_Italic.otf") format("opentype");
+  font-weight: 500;
+  font-style: italic;
+}
+
+@font-face {
+  font-family: "MuseoSans";
+  src: url("/fonts/MuseoSans_900.otf") format("opentype");
+  font-weight: 900;
+  font-style: normal;
+}
+
+@font-face {
+  font-family: "MuseoSans";
+  src: url("/fonts/MuseoSans-900Italic.otf") format("opentype");
+  font-weight: 900;
+  font-style: italic;
+}
+
+/* ================================
    Reset básico + global
 ================================ */
 html,
@@ -8,11 +77,23 @@ body,
 }
 
 body {
+  font-family: "MuseoSans", "Segoe UI", sans-serif;
+  font-weight: 300;
   margin: 0;
   padding: 0;
   min-height: 100vh;
   background: url("/fondo-energia.svg") no-repeat center center fixed;
   background-size: cover;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "gobCL", "Segoe UI", sans-serif;
+  font-weight: 700;
 }
 
 /* ================================

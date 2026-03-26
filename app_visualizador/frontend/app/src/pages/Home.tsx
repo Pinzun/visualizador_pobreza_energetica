@@ -249,14 +249,6 @@ function Home() {
               </select>
             </label>
 
-            {/* ← Indicador de división administrativa */}
-            <div className="home-div-admi">
-              <span style={{ fontWeight: "bold" }}>
-                {selectedComuna ? "Comuna" : selectedRegion ? "Región" : "País"}:
-              </span>
-              <span>{selectedName}</span>
-            </div>
-
             {bloquearSelectores && (
               <span style={{ fontSize: 12, color: "#888" }}>
                 Este indicador solo está disponible a nivel nacional.

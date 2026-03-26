@@ -210,8 +210,6 @@ function Home() {
       {/* ── Tab: Visualizador ── */}
       {tab === "mapa" && (
         <div className="home-layout-mapa">
-          {/* Card superior: selectores */}
-          {/* Card superior: selectores */}
           <div className="home-selectores">
             <label className="administrative-select">
               <span style={{ fontWeight: "bold" }}>Región:</span>

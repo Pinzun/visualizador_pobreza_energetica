@@ -6,6 +6,7 @@ import PieAcceso from "./PieAcceso";
 import CommonBarChart from "./BarChart";
 import SaidiChart from "./SaidiChart";
 import AsequibilidadChart from "./AsequibilidadChart";
+import { getTextoIndicador } from "./TextoDescriptivo";
 
 import {
   TAB_META,
@@ -219,9 +220,15 @@ function InfoPanel({
             <div className="viz-row">
               <div className="viz-card viz-card--texto">
                 <div className="viz-title">Descripción del indicador</div>
-                <div style={{ fontSize: 14, color: "#444" }}>
-                  Aquí puedes poner un texto explicativo sobre los gráficos,
-                  indicadores o cualquier detalle que quieras destacar.
+                <div
+                  style={{
+                    fontSize: 14,
+                    color: "#444",
+                    whiteSpace: "pre-line",
+                  }}
+                >
+                  {getTextoIndicador(indicator)?.descripcion ??
+                    "Sin descripción disponible para este indicador."}
                 </div>
               </div>
               {esAsequibilidad ? (

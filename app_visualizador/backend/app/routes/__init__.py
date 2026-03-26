@@ -20,6 +20,7 @@ from .route_asequibilidad_g_insuficiente import asequibilidad_g_insuficiente_bp
 from .route_asequibilidad_med_nac_proporcion import asequibilidad_med_nac_proporcion_bp
 from .route_asequibilidad_vuln_energetica import asequibilidad_vuln_bp
 from .route_consulta_bases import config_bases
+from .route_app_ver import app_ver_bp
 
 blueprints=[
     acceso_electricidad_bp,
@@ -43,5 +44,6 @@ blueprints=[
     asequibilidad_g_insuficiente_bp,
     asequibilidad_med_nac_proporcion_bp,
     asequibilidad_vuln_bp,
-    config_bases
+    config_bases,
+    app_ver_bp
 ]

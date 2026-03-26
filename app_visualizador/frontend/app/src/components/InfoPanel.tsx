@@ -102,9 +102,12 @@ function InfoPanel({
       calidad_coccion: "Hogares con cocción deficiente",
       calidad_calefaccion: "Hogares con calefacción deficiente",
       calidad_saidi: "Hogares afectados por interrupciones eléctricas",
-      asequibilidad_med_nac_proporcion: "Proporción del gasto respecto a la mediana nacional",
-      asequibilidad_med_nac_menor: "Hogares con gasto menor a la mediana nacional",
-      asequibilidad_med_nac_doble: "Hogares con gasto mayor al doble de la mediana",
+      asequibilidad_med_nac_proporcion:
+        "Proporción del gasto respecto a la mediana nacional",
+      asequibilidad_med_nac_menor:
+        "Hogares con gasto menor a la mediana nacional",
+      asequibilidad_med_nac_doble:
+        "Hogares con gasto mayor al doble de la mediana",
       asequibilidad_gasto_10p: "Hogares con gasto energético sobre el 10%",
       asequibilidad_g_insuficiente: "Hogares con gasto energético insuficiente",
       asequibilidad_vuln: "Hogares vulnerables energéticamente",
@@ -176,18 +179,11 @@ function InfoPanel({
   return (
     <div className="info-panel">
       <div className="info-box info-panel__layout">
-
         {/* Columna izquierda: mapa */}
-        {mapSlot && (
-          <div className="info-panel__map-col">
-            {mapSlot}
-          </div>
-        )}
+        {mapSlot && <div className="info-panel__map-col">{mapSlot}</div>}
 
         {/* Columna derecha: controles + gráficos */}
         <div className="info-panel__content-col">
-
-
           <div className="info-box tabselector">
             <TabSelector
               tabs={tabs}
@@ -221,6 +217,13 @@ function InfoPanel({
 
             {/* ======= FILA DE VISUALIZACIONES ======= */}
             <div className="viz-row">
+              <div className="viz-card viz-card--texto">
+                <div className="viz-title">Descripción del indicador</div>
+                <div style={{ fontSize: 14, color: "#444" }}>
+                  Aquí puedes poner un texto explicativo sobre los gráficos,
+                  indicadores o cualquier detalle que quieras destacar.
+                </div>
+              </div>
               {esAsequibilidad ? (
                 <div className="viz-card" style={{ width: "100%" }}>
                   <div className="viz-title">{pieTitle}</div>
@@ -232,14 +235,26 @@ function InfoPanel({
                 </div>
               ) : indicator === "calidad_saidi" && payload ? (
                 <div className="viz-card" style={{ width: "100%" }}>
-                  <div className="viz-title">Interrupción del servicio eléctrico (SAIDI)</div>
+                  <div className="viz-title">
+                    Interrupción del servicio eléctrico (SAIDI)
+                  </div>
                   {loading ? (
-                    <div style={{ color: "#666", padding: 16 }}>Cargando datos SAIDI…</div>
+                    <div style={{ color: "#666", padding: 16 }}>
+                      Cargando datos SAIDI…
+                    </div>
                   ) : (
                     <SaidiChart
                       payload={payload as any}
-                      selectedRegion={currentCut && currentCut.length <= 2 ? currentCut : undefined}
-                      selectedComuna={currentCut && currentCut.length > 2 ? currentCut : undefined}
+                      selectedRegion={
+                        currentCut && currentCut.length <= 2
+                          ? currentCut
+                          : undefined
+                      }
+                      selectedComuna={
+                        currentCut && currentCut.length > 2
+                          ? currentCut
+                          : undefined
+                      }
                     />
                   )}
                 </div>

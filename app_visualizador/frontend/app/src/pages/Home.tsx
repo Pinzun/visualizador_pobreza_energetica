@@ -210,7 +210,6 @@ function Home() {
       {/* ── Tab: Visualizador ── */}
       {tab === "mapa" && (
         <div className="home-layout-mapa">
-
           {/* Card superior: selectores */}
           {/* Card superior: selectores */}
           <div className="home-selectores">
@@ -226,7 +225,11 @@ function Home() {
                   const code = region?.CUT_REG ?? getRegionCode(region);
                   const name = region?.NOMBRE ?? getName(region);
                   if (!code || !name) return null;
-                  return <option key={code} value={code}>{name}</option>;
+                  return (
+                    <option key={code} value={code}>
+                      {name}
+                    </option>
+                  );
                 })}
               </select>
             </label>
@@ -236,15 +239,26 @@ function Home() {
               <select
                 value={selectedComuna}
                 onChange={(e) => setSelectedComuna(e.target.value)}
-                disabled={bloquearSelectores || !selectedRegion || geoStatus === "loading" || geoStatus === "partial"}
+                disabled={
+                  bloquearSelectores ||
+                  !selectedRegion ||
+                  geoStatus === "loading" ||
+                  geoStatus === "partial"
+                }
               >
                 <option value="">
-                  {selectedRegion ? "Seleccione una comuna" : "Seleccione una región primero"}
+                  {selectedRegion
+                    ? "Seleccione una comuna"
+                    : "Seleccione una región primero"}
                 </option>
                 {comunas.map((comuna) => {
                   const code = getCommuneCode(comuna);
                   const name = getName(comuna);
-                  return <option key={code} value={code}>{name}</option>;
+                  return (
+                    <option key={code} value={code}>
+                      {name}
+                    </option>
+                  );
                 })}
               </select>
             </label>
@@ -254,7 +268,11 @@ function Home() {
                 Este indicador solo está disponible a nivel nacional.
               </span>
             )}
-            {geoError && <span style={{ color: "red" }}>Error geo: {String(geoError)}</span>}
+            {geoError && (
+              <span style={{ color: "red" }}>
+                Error geo: {String(geoError)}
+              </span>
+            )}
           </div>
 
           {/* Card principal: mapa + gráficos */}
@@ -266,7 +284,13 @@ function Home() {
               onIndicatorChange={setIndicator}
               onMapDataChange={setMapData}
               mapSlot={
-                <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                <div
+                  style={{
+                    position: "relative",
+                    width: "100%",
+                    height: "100%",
+                  }}
+                >
                   <MapView
                     regionesNacionales={regionesGeoJson}
                     selectedRegion={selectedRegion}
@@ -279,7 +303,15 @@ function Home() {
                     coloresMapa={mapData.colores_mapa ?? {}}
                   />
                   {mapData.leyenda_mapa && (
-                    <div style={{ position: "absolute", top: 10, right: 10, zIndex: 1000, maxWidth: 220 }}>
+                    <div
+                      style={{
+                        position: "absolute",
+                        top: 10,
+                        right: 10,
+                        zIndex: 1000,
+                        maxWidth: 220,
+                      }}
+                    >
                       <Legend leyenda={mapData.leyenda_mapa} />
                     </div>
                   )}
@@ -287,7 +319,6 @@ function Home() {
               }
             />
           </div>
-
         </div>
       )}
 

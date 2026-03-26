@@ -19,3 +19,4 @@ class ConfigFuentes (db.Model):
     calidad_coccion =db.Column(db.Integer, nullable=False)
     anio_casen =db.Column(db.Integer, nullable=False)
     anio_censo =db.Column(db.Integer, nullable=False)
+    app_version = db.Column(db.String(30), nullable=False)

@@ -38,7 +38,7 @@ async function getDB() {
 
 // Busca entradas "por usuario" y devuelve la más reciente (si hay)
 async function findLatestPerUserPayload(
-  db: IDBPDatabase<any>
+  db: IDBPDatabase<any>,
 ): Promise<GeoCachePayload | null> {
   const tx = db.transaction(STORE_NAME, "readonly");
   const keys = (await tx.store.getAllKeys()) as string[];
@@ -75,7 +75,7 @@ async function findLatestPerUserPayload(
 async function writeGlobalAndCleanup(
   db: IDBPDatabase<any>,
   payload: GeoCachePayload,
-  deleteKeys: string[] = []
+  deleteKeys: string[] = [],
 ) {
   const finalPayload: GeoCachePayload = {
     data: payload.data,
@@ -105,7 +105,7 @@ export async function getGeoCache(_userKey?: string): Promise<any[] | null> {
   if (existingGlobal) {
     return Array.isArray(existingGlobal)
       ? (existingGlobal as any[])
-      : (existingGlobal as GeoCachePayload).data ?? null;
+      : ((existingGlobal as GeoCachePayload).data ?? null);
   }
 
   // 2) Migración desde clave global legacy (OLD_GLOBAL_KEY)
@@ -128,7 +128,7 @@ export async function getGeoCache(_userKey?: string): Promise<any[] | null> {
     await tx.done;
     const prefix = `geojson_cache:${APP_VERSION}:`;
     const toDelete = keys.filter(
-      (k) => typeof k === "string" && k.startsWith(prefix) && k !== GLOBAL_KEY
+      (k) => typeof k === "string" && k.startsWith(prefix) && k !== GLOBAL_KEY,
     );
     const migrated = await writeGlobalAndCleanup(db, latestPerUser, toDelete);
     return migrated.data ?? null;
@@ -142,7 +142,7 @@ export async function getGeoCache(_userKey?: string): Promise<any[] | null> {
 export async function setGeoCache(
   _userKeyOrData: string | any[],
   dataOrMeta?: any[] | Partial<GeoCacheMeta>,
-  maybeMeta?: Partial<GeoCacheMeta>
+  maybeMeta?: Partial<GeoCacheMeta>,
 ): Promise<void> {
   const db = await getDB();
 
@@ -185,7 +185,7 @@ export async function clearGeoCache(options?: { allForVersion?: boolean }) {
     await Promise.all(
       keys
         .filter((k) => typeof k === "string" && k.startsWith(prefix))
-        .map((k) => tx.store.delete(k))
+        .map((k) => tx.store.delete(k)),
     );
   }
 

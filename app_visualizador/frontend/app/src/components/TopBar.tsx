@@ -44,7 +44,7 @@ const TopBar: React.FC<TopBarProps> = ({
         <div className="top-bar-left">
           <Link to="/home" aria-label="Ir al inicio">
             <img
-              src="/logo_energia.png"
+              src="/image/logo_energia.png"
               alt="Ministerio de Energía"
               className="logo"
               style={{ cursor: "pointer" }}

@@ -4,15 +4,16 @@
 .info-panel {
   width: 100%;
   height: 100%;
-  margin-left: 40px;
+  margin-left: clamp(0px, 1.5vw, 24px);
   display: flex;
   flex-direction: column;
   gap: 15px;
-  min-width: 250px;
+  min-width: 0;
 }
 
 .info-box {
-  width: 95%;
+  width: 100%;
+  box-sizing: border-box;
   margin-bottom: 12px;
   padding: 15px;
   border: 1px solid #ccc;
@@ -36,7 +37,8 @@
   border: 1px solid #ccc;
   border-radius: 8px;
   background-color: #f9f9f9;
-  width: 37%;
+  width: fit-content;
+  min-width: 180px;
 }
 
 /* ================================
@@ -64,16 +66,18 @@
 .info-panel__layout {
   display: grid;
   grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  grid-template-rows: 1fr;
   gap: 16px;
   align-items: stretch;
   padding: 16px;
   box-sizing: border-box;
   width: 100%;
-  /* ← sobreescribe el 95% del info-box base */
+  flex: 1;
+  min-height: 0;
 }
 
 .info-panel__map-col {
-  min-height: 400px;
+  min-height: clamp(280px, 32vh, 480px);
   display: flex;
   flex-direction: column;
 }
@@ -98,8 +102,10 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 16px;
-  align-items: start;
+  align-items: stretch;
   margin-top: 12px;
+  flex: 1;
+  min-height: 0;
 }
 
 .viz-card {
@@ -109,7 +115,7 @@
   padding: 12px;
   display: flex;
   flex-direction: column;
-  min-height: 280px;
+  min-height: 260px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
@@ -128,7 +134,7 @@
 .bar-wrapper {
   position: relative;
   width: 100%;
-  height: 250px;
+  height: clamp(200px, 28vh, 420px);
   overflow: visible;
 }
 
@@ -156,16 +162,24 @@
   min-width: 0;
 }
 
+@media (max-width: 1400px) {
+  .info-panel {
+    margin-left: 0;
+  }
+}
+
+@media (max-width: 1100px) {
+  .viz-row {
+    grid-template-columns: 1fr;
+  }
+}
+
 @media (max-width: 900px) {
   .info-panel__layout {
     grid-template-columns: 1fr;
   }
 
-  .viz-row {
-    grid-template-columns: 1fr;
-  }
-
   .info-panel__map-col {
-    min-height: 300px;
+    min-height: clamp(260px, 35vh, 400px);
   }
 }

@@ -85,6 +85,12 @@
   display: block;
 }
 
+@media (min-width: 1800px) {
+  .top-bar__inner {
+    grid-template-columns: minmax(120px, 15%) 1fr minmax(120px, 15%);
+  }
+}
+
 @media (max-width: 768px) {
   .top-bar__inner {
     grid-template-columns: 1fr auto;

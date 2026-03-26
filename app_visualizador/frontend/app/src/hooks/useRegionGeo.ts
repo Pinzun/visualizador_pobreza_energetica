@@ -57,7 +57,7 @@ export default function useRegionGeo(cutReg?: string): UseRegionGeoResult {
         if (FETCH_FROM_ZIP) {
           // Desde ZIP: /geo/zips/comunas_XX.zip (con un único geojson adentro)
           const zipUrl = `${ZIP_BASE}/comunas_${cutReg}.zip`;
-          const resp = await fetch(zipUrl, { cache: "no-store" });
+          const resp = await fetch(zipUrl);
           if (!resp.ok) throw new Error(`ZIP ${zipUrl} -> ${resp.status}`);
 
           const zipBlob = await resp.blob();
@@ -75,7 +75,7 @@ export default function useRegionGeo(cutReg?: string): UseRegionGeoResult {
         } else {
           // Directo: /geo/comunas_by_region/comunas_XX.geojson
           const jsonUrl = `${DIRECT_BASE}/comunas_${cutReg}.geojson`;
-          const resp = await fetch(jsonUrl, { cache: "no-store" });
+          const resp = await fetch(jsonUrl);
           if (!resp.ok) throw new Error(`JSON ${jsonUrl} -> ${resp.status}`);
           geojson = await resp.json();
         }

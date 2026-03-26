@@ -1,4 +1,9 @@
 // src/api/indicadores.ts
+import { getIndicadorCache, setIndicadorCache } from "../utils/indicadorCache";
+
+// Caché en memoria para la sesión actual (más rápido que IndexedDB)
+const sessionCache = new Map<string, IndicadorPayload>();
+
 export type Desglose = {
   indicador: number; // llegó como número en el payload real
   total_a: string; // ← nombre real del backend
@@ -85,9 +90,34 @@ export async function fetchIndicador(
   const base =
     INDICATOR_ENDPOINTS[key] ?? INDICATOR_ENDPOINTS[DEFAULT_INDICATOR];
 
-  console.log("Fetching indicador:", key, "from", base, "cut:", cut);
+  const sessionKey = `${key}:${cut ?? "nacional"}`;
+
+  // 1) Caché de sesión (Map en memoria) — instantáneo
+  const fromSession = sessionCache.get(sessionKey);
+  if (fromSession) {
+    console.log("useIndicador [session-cache]:", key, cut);
+    return fromSession;
+  }
+
+  // 2) Caché persistente (IndexedDB) — evita round-trip al backend entre recargas
+  const fromIdb = await getIndicadorCache(key, cut);
+  if (fromIdb) {
+    console.log("useIndicador [idb-cache]:", key, cut);
+    const payload = fromIdb as IndicadorPayload;
+    sessionCache.set(sessionKey, payload);
+    return payload;
+  }
+
+  // 3) Red
+  console.log("useIndicador [fetch]:", key, "cut:", cut);
   const url = cut ? `${base}?cut=${encodeURIComponent(cut)}` : base;
   const res = await fetch(url, { credentials: "include", cache: "no-store" });
   if (!res.ok) throw new Error(`API ${res.status}`);
-  return res.json();
+  const payload: IndicadorPayload = await res.json();
+
+  // Guardar en ambos niveles
+  sessionCache.set(sessionKey, payload);
+  setIndicadorCache(key, cut, payload); // async, no bloqueamos
+
+  return payload;
 }

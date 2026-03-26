@@ -209,109 +209,63 @@ function Home() {
 
       {/* ── Tab: Visualizador ── */}
       {tab === "mapa" && (
-        <div className="home-layout">
-          {/* Columna izquierda */}
-          <div className="left-col">
-            <div className="select-box">
-              <label className="administrative-select">
-                <span style={{ fontWeight: "bold" }}>Región: </span>
-                <select
-                  value={selectedRegion}
-                  onChange={(e) => setSelectedRegion(e.target.value)}
-                  disabled={bloquearSelectores}
-                >
-                  <option value="">Seleccione una región</option>
-                  {regiones.map((region) => {
-                    const code = region?.CUT_REG ?? getRegionCode(region);
-                    const name = region?.NOMBRE ?? getName(region);
-                    if (!code || !name) return null;
-                    return (
-                      <option key={code} value={code}>
-                        {name}
-                      </option>
-                    );
-                  })}
-                </select>
-              </label>
+        <div className="home-layout-mapa">
 
-              <label className="administrative-select">
-                <span style={{ fontWeight: "bold" }}>Comuna:</span>
-                <select
-                  value={selectedComuna}
-                  onChange={(e) => setSelectedComuna(e.target.value)}
-                  disabled={
-                    bloquearSelectores ||
-                    !selectedRegion ||
-                    geoStatus === "loading" ||
-                    geoStatus === "partial"
-                  }
-                >
-                  <option value="">
-                    {selectedRegion
-                      ? "Seleccione una comuna"
-                      : "Seleccione una región primero"}
-                  </option>
-                  {comunas.map((comuna) => {
-                    const code = getCommuneCode(comuna);
-                    const name = getName(comuna);
-                    return (
-                      <option key={code} value={code}>
-                        {name}
-                      </option>
-                    );
-                  })}
-                </select>
-              </label>
+          {/* Card superior: selectores */}
+          {/* Card superior: selectores */}
+          <div className="home-selectores">
+            <label className="administrative-select">
+              <span style={{ fontWeight: "bold" }}>Región:</span>
+              <select
+                value={selectedRegion}
+                onChange={(e) => setSelectedRegion(e.target.value)}
+                disabled={bloquearSelectores}
+              >
+                <option value="">Seleccione una región</option>
+                {regiones.map((region) => {
+                  const code = region?.CUT_REG ?? getRegionCode(region);
+                  const name = region?.NOMBRE ?? getName(region);
+                  if (!code || !name) return null;
+                  return <option key={code} value={code}>{name}</option>;
+                })}
+              </select>
+            </label>
 
-              {bloquearSelectores && (
-                <span
-                  style={{
-                    fontSize: 12,
-                    color: "#888",
-                    marginTop: 4,
-                    display: "block",
-                  }}
-                >
-                  Este indicador solo está disponible a nivel nacional.
-                </span>
-              )}
+            <label className="administrative-select">
+              <span style={{ fontWeight: "bold" }}>Comuna:</span>
+              <select
+                value={selectedComuna}
+                onChange={(e) => setSelectedComuna(e.target.value)}
+                disabled={bloquearSelectores || !selectedRegion || geoStatus === "loading" || geoStatus === "partial"}
+              >
+                <option value="">
+                  {selectedRegion ? "Seleccione una comuna" : "Seleccione una región primero"}
+                </option>
+                {comunas.map((comuna) => {
+                  const code = getCommuneCode(comuna);
+                  const name = getName(comuna);
+                  return <option key={code} value={code}>{name}</option>;
+                })}
+              </select>
+            </label>
 
-              {geoError && (
-                <span style={{ color: "red" }}>
-                  Error geo: {String(geoError)}
-                </span>
-              )}
+            {/* ← Indicador de división administrativa */}
+            <div className="home-div-admi">
+              <span style={{ fontWeight: "bold" }}>
+                {selectedComuna ? "Comuna" : selectedRegion ? "Región" : "País"}:
+              </span>
+              <span>{selectedName}</span>
             </div>
 
-            <div className="map-slot" style={{ position: "relative" }}>
-              <MapView
-                regionesNacionales={regionesGeoJson}
-                selectedRegion={selectedRegion}
-                selectedComuna={selectedComuna}
-                indicator={indicator}
-                regionBounds={REGION_BOUNDS}
-                comunaBounds={COMUNA_BOUNDS}
-                chileBounds={CHILE_BOUNDS}
-                onComunaClick={(cutCom) => setSelectedComuna(cutCom)}
-                coloresMapa={mapData.colores_mapa ?? {}}
-              />
-              {mapData.leyenda_mapa && (
-                <div
-                  style={{
-                    position: "absolute",
-                    top: 10,
-                    right: 10,
-                    zIndex: 1000,
-                    maxWidth: 220,
-                  }}
-                >
-                  <Legend leyenda={mapData.leyenda_mapa} />
-                </div>
-              )}
-            </div>
+            {bloquearSelectores && (
+              <span style={{ fontSize: 12, color: "#888" }}>
+                Este indicador solo está disponible a nivel nacional.
+              </span>
+            )}
+            {geoError && <span style={{ color: "red" }}>Error geo: {String(geoError)}</span>}
           </div>
 
-          {/* Columna derecha */}
+          {/* Card principal: mapa + gráficos */}
           <div className="info-slot">
             <InfoPanel
               selectedDivAdmi={selectedLevel as any}
@@ -319,8 +273,29 @@ function Home() {
               currentCut={currentCut}
               onIndicatorChange={setIndicator}
               onMapDataChange={setMapData}
+              mapSlot={
+                <div style={{ position: "relative", width: "100%", height: "100%" }}>
+                  <MapView
+                    regionesNacionales={regionesGeoJson}
+                    selectedRegion={selectedRegion}
+                    selectedComuna={selectedComuna}
+                    indicator={indicator}
+                    regionBounds={REGION_BOUNDS}
+                    comunaBounds={COMUNA_BOUNDS}
+                    chileBounds={CHILE_BOUNDS}
+                    onComunaClick={(cutCom) => setSelectedComuna(cutCom)}
+                    coloresMapa={mapData.colores_mapa ?? {}}
+                  />
+                  {mapData.leyenda_mapa && (
+                    <div style={{ position: "absolute", top: 10, right: 10, zIndex: 1000, maxWidth: 220 }}>
+                      <Legend leyenda={mapData.leyenda_mapa} />
+                    </div>
+                  )}
+                </div>
+              }
             />
           </div>
+
         </div>
       )}
 

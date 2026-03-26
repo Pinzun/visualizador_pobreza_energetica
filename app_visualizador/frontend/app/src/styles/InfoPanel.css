@@ -19,11 +19,13 @@
   border-radius: 8px;
   background-color: #f9f9f9;
 }
+
 .info-box--expand {
   flex: 1;
   display: flex;
   flex-direction: column;
 }
+
 .info-box--acceso {
   min-height: 300px;
 }
@@ -46,6 +48,7 @@
   gap: 10px;
   margin-bottom: 16px;
 }
+
 .administrative-select select {
   padding: 6px 12px;
   border-radius: 6px;
@@ -53,6 +56,39 @@
   font-size: 14px;
   background-color: #fff;
   cursor: pointer;
+}
+
+/* ================================
+   Layout interno: mapa + contenido
+================================ */
+.info-panel__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.4fr);
+  gap: 16px;
+  align-items: stretch;
+  padding: 16px;
+  box-sizing: border-box;
+  width: 100%;
+  /* ← sobreescribe el 95% del info-box base */
+}
+
+.info-panel__map-col {
+  min-height: 400px;
+  display: flex;
+  flex-direction: column;
+}
+
+.info-panel__map-col>* {
+  flex: 1;
+  height: 100%;
+  width: 100%;
+}
+
+.info-panel__content-col {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  min-width: 0;
 }
 
 /* ================================
@@ -65,6 +101,7 @@
   align-items: start;
   margin-top: 12px;
 }
+
 .viz-card {
   background: #fff;
   border: 1px solid #e5e7eb;
@@ -75,16 +112,19 @@
   min-height: 280px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
 }
+
 .viz-title {
   font-weight: 600;
   margin-bottom: 8px;
 }
+
 .pie-acceso {
   display: flex;
   justify-content: flex-start;
   align-items: center;
   width: 100%;
 }
+
 .bar-wrapper {
   position: relative;
   width: 100%;
@@ -100,21 +140,32 @@
   align-items: center;
   gap: 8px;
 }
+
 .tabs-bar__spacer {
   flex: 1;
 }
+
 .split-2 {
   display: flex;
   gap: 1rem;
   margin-bottom: 16px;
 }
+
 .split-2__col {
   flex: 1;
   min-width: 0;
 }
 
 @media (max-width: 900px) {
+  .info-panel__layout {
+    grid-template-columns: 1fr;
+  }
+
   .viz-row {
     grid-template-columns: 1fr;
+  }
+
+  .info-panel__map-col {
+    min-height: 300px;
   }
 }
